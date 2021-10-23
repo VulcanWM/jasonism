@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>jasonism - All Games</title>
+    <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>All Games</h1>
+    </div>
+    {% if user == False %}
+      <div class="navbar">
+        <a class="nav-link nav-link-ltr" href="/">Home</a>
+        <a class="nav-link nav-link-ltr" href="/login">Login</a>
+        <a class="nav-link nav-link-ltr" href="/login">Signup</a>
+        <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
+      </div>
+    {% else %}
+      <div class="navbar">
+        <a class="nav-link nav-link-ltr" href="/">Home</a>
+        <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
+        <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
+        <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
+      </div>
+    {% endif %}
+    <div class="content">
+      <p>Things you can do to get XP and ∆:</p>
+      <button onclick="gameredirect('/mencalc')">mental calculations</button>
+      <button onclick="gameredirect('/trivia')">trivia questions</button>
+      <p>You can win or lose ∆ (gamble) by doing:</p>
+      <button onclick="gameredirect('/flipcoin')">flipping coins</button>
+      <button onclick="gameredirect('/rolldice')">rolling die</button>
+      <button onclick="gameredirect('/cupgame')">cup gaming</button>
+      <button onclick="gameredirect('/rps')">rock paper scissoring</button>
+  </body>
+</html>

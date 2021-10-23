@@ -1,0 +1,40 @@
+.container {
+  background: black;
+  display: inline-block;
+  border: 5px solid black;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 80px);
+  grid-template-rows: repeat(300, 80px);
+  grid-gap: 0px;
+}
+.cell {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  font-family: Arial;
+  font-size: 3rem;
+  font-weight: bold;
+  background: white;
+}
+
+.wood{
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  font-family: Arial;
+  font-size: 3rem;
+  font-weight: bold;
+  background: #966F33;
+}
+
+.hair{
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  font-family: Arial;
+  font-size: 3rem;
+  font-weight: bold;
+  background: url(https://jasonism.vulcanwm.repl.co/static/blockhair.png)
+}

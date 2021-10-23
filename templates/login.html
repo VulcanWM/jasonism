@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>jasonism - Login</title>
+    <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>jasonism</h1>
+    </div>
+    <div class="navbar">
+      <a class="nav-link nav-link-ltr" href="/">Home</a>
+      <a class="nav-link nav-link-ltr" href="/login">Login</a>
+      <a class="nav-link nav-link-ltr" href="/signup">Signup</a>
+      <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
+    </div>
+    <div class="content">
+      {% if error != None and error != False and error != "" %}
+        <p>{{error}}</p>
+        <br>
+      {% endif %}
+      <center>
+        <div class="auth">
+          <div class="login-form-body">
+            <div class="login-form-heading">
+            </div>
+            <div class="login-form-form">
+              <form method="POST" action="/login">
+                <h2>Login</h2>
+                <input class="login-form-input" placeholder="username" name="username" autocomplete="off" required><br>
+                <input class="login-form-input" placeholder="password" type="password" name="password" required><br><br>
+                <button class="login-form-button">login</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </center>
+    </div>
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>jasonism - Cup Game</title>
+    <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>Cup Game</h1>
+    </div>
+    <div class="navbar">
+      <a class="nav-link nav-link-ltr" href="/">Home</a>
+      <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
+      <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
+      <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
+    </div>
+    <div class="content">
+      {% if error != None and error != False and error != "" %}
+        <p>{{error}}</p>
+        <br>
+      {% endif %}
+      <p>Money: {{user['Money']}}</p>
+      <input class="login-form-input" placeholder="bet amount" type="number" name="bet" id="bet" required><br>
+      <button onclick="cup(1)">cup 1</button>
+      <button onclick="cup(2)">cup 2</button>
+      <button onclick="cup(3)">cup 3</button>
+  </body>
+</html>
