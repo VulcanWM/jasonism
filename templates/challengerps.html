@@ -3,13 +3,14 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <title>jasonism - Trivia</title>
+    <title>jasonism - Challenge RPS</title>
     <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
   </head>
   <body>
     <div class="header">
-      <h1>Trivia</h1>
+      <h1>Challenge RPS</h1>
     </div>
     <div class="navbar">
       <a class="nav-link nav-link-ltr" href="/">Home</a>
@@ -19,17 +20,16 @@
       <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
     </div>
     <div class="content">
+      <div id="error">
+      </div>
       {% if error != None and error != False and error != "" %}
         <p>{{error}}</p>
         <br>
       {% endif %}
-      <p>XP: {{user['XP']}}</p>
-      <p>Money: {{user['Money']}}</p>
-      <h3>{{question}}</h3>
-      {% for answer in answers %}
-        <a href="/trivia/{{answer}}">{{answer}}</a>
-        <br>
-      {% endfor %}
-    <script src="{{url_for('static', filename='sticky.js')}}"></script>
+      <input class="login-form-input" placeholder="bet amount" type="number" name="bet" id="bet" required><br>
+      <input class="login-form-input" placeholder="challenge username" type="text" name="enemy" id="enemy" required><br>
+      <button onclick="rpsc('rock')">rock</button>
+      <button onclick="rpsc('paper')">paper</button>
+      <button onclick="rpsc('scissors')">scissors</button>
   </body>
 </html>

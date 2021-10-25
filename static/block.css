@@ -38,3 +38,23 @@
   font-weight: bold;
   background: url(https://jasonism.vulcanwm.repl.co/static/blockhair.png)
 }
+
+.beard{
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  font-family: Arial;
+  font-size: 3rem;
+  font-weight: bold;
+  background: url(https://jasonism.vulcanwm.repl.co/static/blockbeard.png)
+}
+
+.face{
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  font-family: Arial;
+  font-size: 3rem;
+  font-weight: bold;
+  background: url(https://jasonism.vulcanwm.repl.co/static/blockface.png)
+}

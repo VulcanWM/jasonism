@@ -3,13 +3,14 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <title>jasonism - Trivia</title>
+    <title>jasonism - Unscramble word</title>
     <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
   </head>
   <body>
     <div class="header">
-      <h1>Trivia</h1>
+      <h1>Unscrable Word</h1>
     </div>
     <div class="navbar">
       <a class="nav-link nav-link-ltr" href="/">Home</a>
@@ -23,13 +24,12 @@
         <p>{{error}}</p>
         <br>
       {% endif %}
-      <p>XP: {{user['XP']}}</p>
       <p>Money: {{user['Money']}}</p>
-      <h3>{{question}}</h3>
-      {% for answer in answers %}
-        <a href="/trivia/{{answer}}">{{answer}}</a>
-        <br>
-      {% endfor %}
-    <script src="{{url_for('static', filename='sticky.js')}}"></script>
+      <p>XP: {{user['XP']}}</p>
+      <h3>{{shuffle}}</h3>
+      <form method="POST" action="/unscrambleword/{{shuffle}}">
+        <input class="login-form-input" placeholder="unscrambled word" type="text" name="word" id="word" required><br>
+        <button>answer</button>
+      </form>
   </body>
 </html>

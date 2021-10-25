@@ -6,11 +6,17 @@ import datetime
 import random
 import requests
 from string import printable
+from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 
 clientm = pymongo.MongoClient(os.getenv("clientm"))
 usersdb = clientm.Users
 profilescol = usersdb.Profiles
+notifscol = usersdb.Notifications
+
+with open("static/words.txt", "r") as file:
+  allText = file.read()
+  words = list(map(str, allText.split()))
 
 def addcookie(key, value):
   session[key] = value
@@ -312,7 +318,7 @@ def upgradeblock(username, index):
     index = int(index)
     user = getuser(username)
     thetype = user['Block'][int(index)]
-    if thetype == 1:
+    if thetype == 3:
       return "You have upgraded that block in your block the most you can!"
     newtype = thetype + 1
     user2 = user
@@ -330,3 +336,139 @@ def upgradeblock(username, index):
     return True
   except:
     return "That is not real land on your grid!"
+
+def randomword():
+  word = random.choice(words)
+  return word
+
+def shuffleword(word):
+  word = list(word)
+  random.shuffle(word)
+  shuffle = ''.join(word)
+  return shuffle
+
+def getnotifs(username):
+  myquery = { "Username": username }
+  mydoc = notifscol.find(myquery)
+  notifs = []
+  for x in mydoc:
+    notifs.append(x)
+  return notifs
+
+def getnotifsnotseen(username):
+  myquery = { "Username": username }
+  mydoc = notifscol.find(myquery)
+  notifs = []
+  for x in mydoc:
+    if x['Seen'] == False:
+      notifs.append(x)
+  notifs.reverse()
+  return notifs
+
+def addnotif(username, notif, typename):
+  if isinstance(typename, dict):
+    if typename['Type'] == 'RPS':
+      notifdoc = {"Username": username, "Seen": False, "Type": "RPS", "Symbol": typename['Symbol'], "Bet": typename['Bet'], "User": typename['User']}
+  else:
+    notifdoc = {"Username": username, "Notification": notif, "Seen": False, "Type": "Normal"}
+  notifscol.insert_many([notifdoc])
+  return True
+
+def clearnotifs(username):
+  notifs = getnotifs(username)
+  for notif in notifs:
+    delete = {"_id": notif['_id']}
+    notifscol.delete_one(delete)
+  return True
+
+def allseen(username):
+  notifs = getnotifs(username)
+  myquery = { "Username": username }
+  newvalues = { "$set": { "Seen": True } }
+  notifscol.update_many(myquery, newvalues)
+  return True
+
+def challengerps(username, enemy, bet, symbol):
+  try:
+    bet = int(bet)
+    if getuser(enemy) == False:
+      return f"{enemy} is not a real user!"
+    if enemy == username:
+      return "You cannot challenge yourself!"
+    if bet > getuser(enemy)['Money']:
+      return f"{enemy} does not have {str(bet)}!"
+    if bet > getuser(username)['Money']:
+      return f"You don't have {str(bet)}!"
+    thedict = {"Type": "RPS", "Symbol": symbol, "Bet": bet, "User": username}
+    addnotif(enemy, None, thedict)
+    addnotif(username, f"You challenged {enemy} to a RPS game for ∆{str(bet)}!", "Normal")
+    return True
+  except:
+    return f"{bet} is not a number!"
+
+def getchallenge(theid):
+  mydoc = notifscol.find({"_id": ObjectId(theid)})
+  if mydoc == None or mydoc == False or mydoc == []:
+    return False
+  thedoc = []
+  for x in mydoc:
+    thedoc.append(x)
+  challengedoc = thedoc[0]
+  return challengedoc
+
+def denychallenge(username, theid):
+  challengedoc = getchallenge(theid)
+  if challengedoc == False:
+    return "That is not a real challenge!"
+  if challengedoc['Username'] != username:
+    return "You cannot deny this challenge as it has not been directed to you!"
+  challengesender = challengedoc['User']
+  addnotif(username, f"You rejected {challengesender}'s challenge to a {challengedoc['Type']} game for ∆{str(challengedoc['Bet'])}!", "Normal")
+  addnotif(challengesender, f"{username} rejected your challenged to a {challengedoc['Type']} game for ∆{str(challengedoc['Bet'])}!", "Normal")
+  notifscol.delete_one({"_id": ObjectId(theid)})
+  return True
+
+def acceptchallengefuncfunc(user2symbol, user1symbol, user2, user1, bet, theid):
+  if user2symbol == 'rock':
+    if user1symbol == 'rock':
+      addnotif(user1, f"The RPS game between you and {user2} was a draw! You didn't win or lose anything!", "Normal")
+      addnotif(user2, f"The RPS game between you and {user1} was a draw! You didn't win or lose anything!", "Normal")
+    if user1symbol == 'paper':
+      addmoney(user1, bet)
+      addmoney(user2, bet*-1)
+      addnotif(user1, f"You won the RPS game between you and {user2}! You won ∆{str(bet)}!", "Normal")
+      addnotif(user2, f"You lost the RPS game between you and {user1}! You lost ∆{str(bet)}!", "Normal")
+    if user1symbol == 'scissors':
+      addmoney(user1, bet*-1)
+      addmoney(user2, bet)
+      addnotif(user1, f"You lost the RPS game between you and {user2}! You lost ∆{str(bet)}!", "Normal")
+      addnotif(user2, f"You won the RPS game between you and {user1}! You won ∆{str(bet)}!", "Normal")
+  if user2symbol == 'paper':
+    if user1symbol == 'rock':
+      addmoney(user1, bet*-1)
+      addmoney(user2, bet)
+      addnotif(user1, f"You lost the RPS game between you and {user2}! You lost ∆{str(bet)}!", "Normal")
+      addnotif(user2, f"You won the RPS game between you and {user1}! You won ∆{str(bet)}!", "Normal")
+    if user1symbol == 'paper':
+      addnotif(user1, f"The RPS game between you and {user2} was a draw! You didn't win or lose anything!", "Normal")
+      addnotif(user2, f"The RPS game between you and {user1} was a draw! You didn't win or lose anything!", "Normal")
+    if user1symbol == 'scissors':
+      addmoney(user1, bet)
+      addmoney(user2, bet*-1)
+      addnotif(user1, f"You won the RPS game between you and {user2}! You won ∆{str(bet)}!", "Normal")
+      addnotif(user2, f"You lost the RPS game between you and {user1}! You lost ∆{str(bet)}!", "Normal")
+  if user2symbol == 'scissors':
+    if user1symbol == 'rock':
+      addmoney(user1, bet)
+      addmoney(user2, bet*-1)
+      addnotif(user1, f"You won the RPS game between you and {user2}! You won ∆{str(bet)}!", "Normal")
+      addnotif(user2, f"You lost the RPS game between you and {user1}! You lost ∆{str(bet)}!", "Normal")
+    if user1symbol == 'paper':
+      addmoney(user1, bet*-1)
+      addmoney(user2, bet)
+      addnotif(user1, f"You lost the RPS game between you and {user2}! You lost ∆{str(bet)}!", "Normal")
+      addnotif(user2, f"You won the RPS game between you and {user1}! You won ∆{str(bet)}!", "Normal")
+    if user1symbol == 'scissors':
+      addnotif(user1, f"The RPS game between you and {user2} was a draw! You didn't win or lose anything!", "Normal")
+      addnotif(user2, f"The RPS game between you and {user1} was a draw! You didn't win or lose anything!", "Normal")
+  notifscol.delete_one({"_id": ObjectId(theid)})

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, request
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -268,3 +268,101 @@ def allgames():
     return render_template("allgames.html", user=False)
   else:
     return render_template("allgames.html", user=True)
+
+@app.route("/unscrambleword")
+def unscramblewordpage():
+  if getcookie("User") == False:
+    return redirect("/login")
+  word = randomword()
+  shuffle = shuffleword(word)
+  return render_template("unscrambleword.html", shuffle=shuffle, user=getuser(getcookie("User")))
+
+@app.route("/unscrambleword/<shuffle>", methods=['POST', 'GET'])
+def unscramblewordfunc(shuffle):
+  if request.method == 'POST':
+    if getcookie("User") == False:
+      return redirect("/login")
+    word = request.form['word'].lower()
+    shuffleletters = []
+    for letter in shuffle:
+      shuffleletters.append(letter)
+    wordletters = []
+    for letter in word:
+      wordletters.append(letter)
+    wordletters.sort()
+    shuffleletters.sort()
+    if wordletters == shuffleletters:
+      if word in words:
+        xp = random.randint(75,100)
+        addxpmoney(getcookie("User"), xp, xp*10)
+    return redirect("/unscrambleword")
+  else:
+    return redirect("/unscrambleword")
+
+@app.route("/notifs")
+def notifs():
+  if getcookie("User") == False:
+    return render_template("/login")
+  notifs = getnotifs(getcookie("User"))
+  allseen(getcookie("User"))
+  return render_template("notifs.html", notifs=notifs)
+
+@app.route("/clearnotifs")
+def clearnotifsapp():
+  if getcookie("User") == False:
+    return render_template("/login")
+  clearnotifs(getcookie("User"))
+  return redirect("/notifs")
+
+@app.route("/challengerps")
+def challengerpspage():
+  if getcookie("User") == False:
+    return redirect("/login")
+  else:
+    return render_template("challengerps.html")
+
+@app.route("/challengerps/<symbol>/<enemy>/<bet>")
+def challengerpsfunc(symbol, enemy, bet):
+  if getcookie("User") == False:
+    return redirect("/login")
+  func = challengerps(getcookie("User"), enemy, bet, symbol)
+  if func == True:
+    return redirect("/notifs")
+  else:
+    return render_template("challengerps.html", error=func)
+
+@app.route("/denychallenge/<theid>")
+def denychallengepage(theid):
+  if getcookie("User") == False:
+    return redirect("/login")
+  denychallenge(getcookie("User"), theid)
+  return redirect("/notifs")
+
+@app.route("/acceptchallenge/<theid>")
+def acceptchallengepage(theid):
+  if getcookie("User") == False:
+    return redirect("/login")
+  challenge = getchallenge(theid)
+  if challenge == False:
+    return redirect("/notifs")
+  if challenge['Username'] != getcookie("User"):
+    return redirect("/notifs")
+  return render_template("acceptchallenge.html", challenge=challenge)
+
+@app.route("/acceptchallenge/<theid>/<symbol>")
+def acceptchallengefunc(theid, symbol):
+  if getcookie("User") == False:
+    return redirect("/login")
+  challenge = getchallenge(theid)
+  if challenge == False:
+    return redirect("/notifs")
+  if challenge['Username'] != getcookie("User"):
+    return redirect("/notifs")
+  if challenge['Type'] == 'RPS':
+    user2symbol = symbol
+    user1symbol = challenge['Symbol']
+    user2 = challenge['Username']
+    user1 = challenge['User']
+    bet = challenge['Bet']
+    acceptchallengefuncfunc(user2symbol, user1symbol, user2, user1, bet, theid)
+    return redirect("/notifs")

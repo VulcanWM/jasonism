@@ -1,6 +1,6 @@
 window.onscroll = function() {myFunction()};
 
-var navbar = document.getElementById("navbar");
+var navbar = document.getElementsByClassName("navbar")[0];
 var sticky = navbar.offsetTop;
 
 function myFunction() {
@@ -9,6 +9,28 @@ function myFunction() {
   } else {
     navbar.classList.remove("sticky");
   }
+}
+
+function rpsc(guess) {
+  var bet = document.getElementById("bet").value;
+  var enemy = document.getElementById("enemy").value;
+  if (bet == "") {
+    error = document.getElementById("error")
+    error.innerHTML = "You have to enter a bet amount!"
+  } else {
+    if (enemy == "") {
+      error = document.getElementById("error")
+      error.innerHTML = "You have to enter the person you want to challenge!"
+    } else {
+      window.location.href = "https://jasonism.vulcanwm.repl.co/challengerps/" + guess + "/" + enemy + "/" + bet;
+    }
+  }
+}
+
+function rpsac(guess) {
+  var pathname = window.location.pathname;
+  pathname = pathname.replace("/acceptchallenge/", "")
+  window.location.href = "https://jasonism.vulcanwm.repl.co/acceptchallenge/" + pathname + "/" + guess;
 }
 
 function cup(guess) {
@@ -33,4 +55,16 @@ function dice(guess) {
 
 function gameredirect(urlpart){
   window.location.href = "https://jasonism.vulcanwm.repl.co" + urlpart;
+}
+
+function embedded() {
+  try {
+    return window.self !== window.top;
+  } catch(e) {
+    return true;
+  }
+}
+
+if(embedded()){
+  document.body.innerHTML = `<p>Please open this in a <a href="https://jasonism.vulcanwm.repl.co" target="_blank">new tab</a> for best results.`;
 }

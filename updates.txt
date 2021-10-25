@@ -1,0 +1,5 @@
+- Adding 2 more upgrades to blocks
+- Added it not working when it is embedded (thanks to @ruiwenge2 for the code for it)
+- Added a new game to get xp and ∆: unscramble word
+- Added a notifications page
+- Added a multiplayer rps game

@@ -15,6 +15,7 @@
     <div class="navbar">
       <a class="nav-link nav-link-ltr" href="/">Home</a>
       <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
+      <a class="nav-link nav-link-ltr" href="/notifs">Notifications</a>
       <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
       <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
     </div>
@@ -30,12 +31,12 @@
       <a href="/makeblockbigger" class="hoverlink">Make your block bigger</a>
       <br>
       <p>Click on the block you want to upgrade, to updgrade it. It will cost ∆5000 to upgrade each block.</p>
-      <p>Right now you can only upgrade a block of the block once, by giving it hair.</p>
+      <p>You can upgrade each block of the block three times. The first time by giving it hair, the second time by giving it a beard, and the third time by giving it a face.</p>
       <div class="container">
         <div class="grid">
           {% set count = namespace(value=0) %}
           {% for land in user['Block'] %}
-            {% set items = ['wood', 'hair']%}
+            {% set items = ['wood', 'hair', 'beard', 'face']%}
             <a href="/upgradeblock/{{count.value}}" class="{{items[land]}}"></a>
             {% set count.value = count.value + 1 %}
           {% endfor %}
