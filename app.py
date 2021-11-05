@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, request
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -366,3 +366,35 @@ def acceptchallengefunc(theid, symbol):
     bet = challenge['Bet']
     acceptchallengefuncfunc(user2symbol, user1symbol, user2, user1, bet, theid)
     return redirect("/notifs")
+
+@app.route("/@<username>")
+def user(username):
+  if getcookie("User") == False:
+    pass
+  else:
+    if getcookie("User") == username:
+      return redirect("/profile")
+  user = getuser(username)
+  if user == False:
+    return redirect("/")
+  else:
+    level = str(int(user['XP'])/1000 + 1).split(".")[0]
+    user['Level'] = level
+    return render_template("userprofile.html", user=user)
+
+@app.route("/gamblingstats")
+def gamblingstats():
+  if getcookie("User") == False:
+    return redirect("/login")
+  stats = checkgambling(getcookie("User"))
+  return render_template("gamblingstats.html", stats=stats)
+
+@app.route("/gamblingstats/@<username>")
+def gamblingstatsuser(username):
+  if getcookie("User") == False:
+    pass
+  else:
+    if getcookie("User") == username:
+      return redirect("/gamblingstats")
+  stats = checkgambling(username)
+  return render_template("usergamblingstats.html", stats=stats)
