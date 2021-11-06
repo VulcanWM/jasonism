@@ -53,6 +53,8 @@ def getuser(username):
   mydoc = profilescol.find(myquery)
   for x in mydoc:
     if x.get("Deleted", None) == None:
+      if x.get("BlockName", None) == None:
+        x['BlockName'] = "your pet"
       return x
     return False
   return False
@@ -589,3 +591,15 @@ def acceptchallengefuncfunc(user2symbol, user1symbol, user2, user1, bet, theid):
       addnotif(user1, f"The RPS game between you and {user2} was a draw! You didn't win or lose anything!", "Normal")
       addnotif(user2, f"The RPS game between you and {user1} was a draw! You didn't win or lose anything!", "Normal")
   notifscol.delete_one({"_id": ObjectId(theid)})
+
+def changeblockname(username, newname):
+  user = getuser(username)
+  if len(newname) > 17:
+    return "Your pet block's name cannot be more than 16 letters long!"
+  if set(username).difference(printable):
+    return "Your pet block's name cannot include any special letters!"
+  del user['BlockName']
+  user['BlockName'] = newname
+  profilescol.delete_one({"Username": username})
+  profilescol.insert_many([user])
+  return True

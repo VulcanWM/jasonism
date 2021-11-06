@@ -15,6 +15,7 @@
       <a class="nav-link nav-link-ltr" href="/">Home</a>
       <a class="nav-link nav-link-ltr" href="/login">Login</a>
       <a class="nav-link nav-link-ltr" href="/signup">Signup</a>
+      <a class="nav-link nav-link-ltr" href="/settings">Settings</a>
       <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
     </div>
     <div class="content">
@@ -22,22 +23,11 @@
         <p>{{error}}</p>
         <br>
       {% endif %}
-      <center>
-        <div class="auth">
-          <div class="login-form-body">
-            <div class="login-form-heading">
-            </div>
-            <div class="login-form-form">
-              <form method="POST" action="/login">
-                <h2>Login</h2>
-                <input class="login-form-input" placeholder="username" name="username" autocomplete="off" required><br>
-                <input class="login-form-input" placeholder="password" type="password" name="password" required><br><br>
-                <button class="login-form-button">login</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </center>
+      <form method="POST" action="/changeblockname">
+        <h2>Change Block Name</h2>
+        <input class="login-form-input" placeholder="blockname" name="blockname" autocomplete="off" value="{{user['BlockName']}}" required><br>
+        <button class="login-form-button">change block name</button>
+      </form>
     </div>
     <script src="{{url_for('static', filename='sticky.js')}}"></script>
   </body>

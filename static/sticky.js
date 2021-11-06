@@ -22,7 +22,7 @@ function rpsc(guess) {
       error = document.getElementById("error")
       error.innerHTML = "You have to enter the person you want to challenge!"
     } else {
-      window.location.href = "https://huge-jasonism.vulcanwm.repl.co/challengerps/" + guess + "/" + enemy + "/" + bet;
+      window.location.href = "https://jasonism-fork.vulcanwm.repl.co/challengerps/" + guess + "/" + enemy + "/" + bet;
     }
   }
 }
@@ -30,31 +30,31 @@ function rpsc(guess) {
 function rpsac(guess) {
   var pathname = window.location.pathname;
   pathname = pathname.replace("/acceptchallenge/", "")
-  window.location.href = "https://huge-jasonism.vulcanwm.repl.co/acceptchallenge/" + pathname + "/" + guess;
+  window.location.href = "https://jasonism-fork.vulcanwm.repl.co/acceptchallenge/" + pathname + "/" + guess;
 }
 
 function cup(guess) {
   var bet = document.getElementById("bet").value;
-  window.location.href = "https://huge-jasonism.vulcanwm.repl.co/cupgame/" + guess + "/" + bet;
+  window.location.href = "https://jasonism-fork.vulcanwm.repl.co/cupgame/" + guess + "/" + bet;
 }
 
 function coin(guess) {
   var bet = document.getElementById("bet").value;
-  window.location.href = "https://huge-jasonism.vulcanwm.repl.co/flipcoin/" + guess + "/" + bet;
+  window.location.href = "https://jasonism-fork.vulcanwm.repl.co/flipcoin/" + guess + "/" + bet;
 }
 
 function rps(guess) {
   var bet = document.getElementById("bet").value;
-  window.location.href = "https://huge-jasonism.vulcanwm.repl.co/rps/" + guess + "/" + bet;
+  window.location.href = "https://jasonism-fork.vulcanwm.repl.co/rps/" + guess + "/" + bet;
 }
 
 function dice(guess) {
   var bet = document.getElementById("bet").value;
-  window.location.href = "https://huge-jasonism.vulcanwm.repl.co/rolldice/" + guess + "/" + bet;
+  window.location.href = "https://jasonism-fork.vulcanwm.repl.co/rolldice/" + guess + "/" + bet;
 }
 
 function gameredirect(urlpart){
-  window.location.href = "https://huge-jasonism.vulcanwm.repl.co" + urlpart;
+  window.location.href = "https://jasonism-fork.vulcanwm.repl.co" + urlpart;
 }
 
 function embedded() {
@@ -66,5 +66,5 @@ function embedded() {
 }
 
 if(embedded()){
-  document.body.innerHTML = `<p>Please open this in a <a href="https://huge-jasonism.vulcanwm.repl.co" target="_blank">new tab</a> for best results.`;
+  document.body.innerHTML = `<p>Please open this in a <a href="https://jasonism-fork.vulcanwm.repl.co" target="_blank">new tab</a> for best results.`;
 }

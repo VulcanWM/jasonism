@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, request
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -398,3 +398,27 @@ def gamblingstatsuser(username):
       return redirect("/gamblingstats")
   stats = checkgambling(username)
   return render_template("usergamblingstats.html", stats=stats)
+
+@app.route("/settings")
+def settings():
+  if getcookie("User") == False:
+    return redirect("/login")
+  user = getuser(getcookie("User"))
+  return render_template("settings.html", user=user)
+
+@app.route("/changeblockname", methods=['GET', 'POST'])
+def changeblocknamefunc():
+  if request.method == 'POST':
+    if getcookie("User") == False:
+      return redirect("/login")
+    newname = request.form['blockname']
+    user = getuser(getcookie("User"))
+    if user['BlockName'] == newname:
+      return redirect("/settings")
+    func = changeblockname(getcookie("User"), newname)
+    if func == True:
+      return redirect("/settings")
+    else:
+      return render_template("settings.html", error=func, user=user)
+  else:
+    return redirect("/settings")

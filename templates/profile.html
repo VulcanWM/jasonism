@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <title>jasonism huge - Your Profile</title>
+    <title>jasonism - Your Profile</title>
     <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ url_for('static', filename='block.css') }}" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
@@ -17,6 +17,7 @@
       <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
       <a class="nav-link nav-link-ltr" href="/notifs">Notifications</a>
       <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
+      <a class="nav-link nav-link-ltr" href="/settings">Settings</a>
       <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
     </div>
     <div class="content">
@@ -29,10 +30,13 @@
       <p>Money: {{user['Money']}}</p>
       <p>Level: {{user['Level']}}</p>
       <a href="/gamblingstats">Your Gambling Stats</a>
-      <a href="/makeblockbigger" class="hoverlink">Make your block bigger</a>
+      <br>
+      <a href="/makeblockbigger" class="hoverlink">Make {{user['BlockName']}} bigger</a>
       <br>
       <p>Click on the block you want to upgrade, to updgrade it. It will cost ∆5000 to upgrade each block.</p>
-      <p>You can upgrade each block of the block three times. The first time by giving it hair, the second time by giving it a beard, and the third time by giving it a face.</p>
+      <p>You can upgrade each block of {{user['BlockName']}} three times. The first time by giving it hair, the second time by giving it a beard, and the third time by giving it a face.</p>
+      <hr>
+      <h3>{{user['BlockName']}}</h3>
       <div class="container">
         <div class="grid">
           {% set count = namespace(value=0) %}
