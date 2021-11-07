@@ -7,3 +7,4 @@
 - Added settings for your account: `/settings`
 - Added changing your block's name: `/changeblockname`
 - Added changing your description: `/changedesc`
+- Added a 30 seconds time limit to unscramble word

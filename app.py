@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, request
+import datetime
 from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc
 import os
 import random
@@ -275,6 +276,7 @@ def unscramblewordpage():
     return redirect("/login")
   word = randomword()
   shuffle = shuffleword(word)
+  addcookie("scrambletime", datetime.datetime.now(datetime.timezone.utc))
   return render_template("unscrambleword.html", shuffle=shuffle, user=getuser(getcookie("User")))
 
 @app.route("/unscrambleword/<shuffle>", methods=['POST', 'GET'])
@@ -282,6 +284,8 @@ def unscramblewordfunc(shuffle):
   if request.method == 'POST':
     if getcookie("User") == False:
       return redirect("/login")
+    if getcookie("scrambletime") == False:
+      return redirect("/unscrambleword")
     word = request.form['word'].lower()
     shuffleletters = []
     for letter in shuffle:
@@ -291,6 +295,15 @@ def unscramblewordfunc(shuffle):
       wordletters.append(letter)
     wordletters.sort()
     shuffleletters.sort()
+    timenow = datetime.datetime.now(datetime.timezone.utc)
+    timethen = getcookie("scrambletime")
+    diff = timenow - timethen
+    seconds = diff.total_seconds()
+    username = getcookie("User")
+    delcookies()
+    addcookie("User", username)
+    if seconds > 30:
+      return redirect("/unscrambleword")
     if wordletters == shuffleletters:
       if word in words:
         xp = random.randint(75,100)
