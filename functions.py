@@ -594,12 +594,24 @@ def acceptchallengefuncfunc(user2symbol, user1symbol, user2, user1, bet, theid):
 
 def changeblockname(username, newname):
   user = getuser(username)
-  if len(newname) > 17:
+  if len(newname) > 15:
     return "Your pet block's name cannot be more than 16 letters long!"
-  if set(username).difference(printable):
+  if set(newname).difference(printable):
     return "Your pet block's name cannot include any special letters!"
   del user['BlockName']
   user['BlockName'] = newname
+  profilescol.delete_one({"Username": username})
+  profilescol.insert_many([user])
+  return True
+
+def changedesc(username, desc):
+  user = getuser(username)
+  if len(desc) > 159:
+    return "Your description cannot be more than 160 letters long!"
+  if set(desc).difference(printable):
+    return "Your description cannot include any special letters!"
+  del user['Description']
+  user['Description'] = desc
   profilescol.delete_one({"Username": username})
   profilescol.insert_many([user])
   return True

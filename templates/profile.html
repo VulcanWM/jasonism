@@ -26,6 +26,11 @@
         <br>
       {% endif %}
       <h2>{{user['Username']}}</h2>
+      {% if user['Description'] == None %}
+        <p><strong>You don't have a description!</strong></p>
+      {% else %}
+        <p><strong>{{user['Description']}}</strong></p>
+      {% endif %}
       <p>XP: {{user['XP']}}</p>
       <p>Money: {{user['Money']}}</p>
       <p>Level: {{user['Level']}}</p>

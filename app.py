@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, request
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -416,6 +416,23 @@ def changeblocknamefunc():
     if user['BlockName'] == newname:
       return redirect("/settings")
     func = changeblockname(getcookie("User"), newname)
+    if func == True:
+      return redirect("/settings")
+    else:
+      return render_template("settings.html", error=func, user=user)
+  else:
+    return redirect("/settings")
+
+@app.route("/changedesc", methods=['GET', 'POST'])
+def changedescfunc():
+  if request.method == 'POST':
+    if getcookie("User") == False:
+      return redirect("/login")
+    desc = request.form['desc']
+    user = getuser(getcookie("User"))
+    if user['Description'] == desc:
+      return redirect("/settings")
+    func = changedesc(getcookie("User"), desc)
     if func == True:
       return redirect("/settings")
     else:
