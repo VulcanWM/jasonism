@@ -14,6 +14,7 @@ usersdb = clientm.Users
 profilescol = usersdb.Profiles
 notifscol = usersdb.Notifications
 gamblingcol = usersdb.Gambling
+xpstatscol = usersdb.XPStats
 
 with open("static/words.txt", "r") as file:
   allText = file.read()
@@ -147,6 +148,21 @@ def addgambling(username, gametype, stats):
     userstats['ChallengeRPS'] = newdoc
   gamblingcol.delete_one({"Username": username})
   gamblingcol.insert_many([userstats])
+
+def checkxpstats(username):
+  myquery = { "Username": username }
+  mydoc = xpstatscol.find(myquery)
+  for x in mydoc:
+    return x
+  document = {
+    "Username": username,
+    "": [0,0,0,0],
+    "Rolldice": [0,0,0,0],
+    "Cupgame": [0,0,0,0],
+    "RPS": [0,0,0,0,0],
+    "ChallengeRPS": [0,0,0,0,0]
+  }
+  return document
 
 def makeaccount(username, password, passwordagain):
   if len(username) > 25:

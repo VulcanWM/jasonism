@@ -26,4 +26,4 @@ You can make your block HUGER if you meet these two requirements:
 A block in your block is the area the main block increases when you make your block HUGER once.
 You can also make your block prettier by [spending your ∆ on things for your block](https://jasonism-fork.vulcanwm.repl.co/profile).</p>
 
-## [CLICK HERE TO PLAY](https://jasonism-fork.vulcanwm.repl.coo)
+## [CLICK HERE TO PLAY](https://jasonism-fork.vulcanwm.repl.co)
