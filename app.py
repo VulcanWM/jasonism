@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request
 import datetime
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -130,7 +130,10 @@ def triviaanswer(guess):
     difficulty = getcookie("Difficulty")
     xp = xps[difficulty]
     money = moneys[difficulty]
+    addxpstats(getcookie("User"), "trivia", [1,0,xp])
     addxpmoney(getcookie("User"), xp, money)
+  else:
+    addxpstats(getcookie("User"), "trivia", [0,1,0])
   return redirect("/trivia")
 
 @app.route("/trivia/<guess>/<guess2>")
@@ -245,7 +248,10 @@ def mencalcfunc():
     answer = getcookie("MathsAns")
     guess = request.form['guess']
     if answer == guess:
+      addxpstats(getcookie("User"), "mencalc", [1, 0, 25])
       addxpmoney(getcookie("User"), 25, 250)
+    else:
+      addxpstats(getcookie("User"), "mencalc", [0,1,0])
     return redirect("/mencalc")
   else:
     return redirect("/mencalc")
@@ -307,7 +313,10 @@ def unscramblewordfunc(shuffle):
     if wordletters == shuffleletters:
       if word in words:
         xp = random.randint(75,100)
+        addxpstats(getcookie("User"), "unscramble", [1,0,xp])
         addxpmoney(getcookie("User"), xp, xp*10)
+      else:
+        addxpstats(getcookie("User"), "unscramble", [0,1,0])
     return redirect("/unscrambleword")
   else:
     return redirect("/unscrambleword")
@@ -452,3 +461,20 @@ def changedescfunc():
       return render_template("settings.html", error=func, user=user)
   else:
     return redirect("/settings")
+
+@app.route("/xpstats")
+def xpstats():
+  if getcookie("User") == False:
+    return redirect("/login")
+  stats = checkxpstats(getcookie("User"))
+  return render_template("xpstats.html", stats=stats)
+
+@app.route("/xpstats/@<username>")
+def xpstatsuser(username):
+  if getcookie("User") == False:
+    pass
+  else:
+    if getcookie("User") == username:
+      return redirect("/xpstats")
+  stats = checkgambling(username)
+  return render_template("userxpstats.html", stats=stats)

@@ -156,13 +156,54 @@ def checkxpstats(username):
     return x
   document = {
     "Username": username,
-    "": [0,0,0,0],
-    "Rolldice": [0,0,0,0],
-    "Cupgame": [0,0,0,0],
-    "RPS": [0,0,0,0,0],
-    "ChallengeRPS": [0,0,0,0,0]
+    # [times won, times lost, xp earned]
+    "MenCalc": [0,0,0],
+    # [times won, times lost, xp earned]
+    "Trivia": [0,0,0],
+    # [times won, times lost, xp earned]
+    "Unscramble": [0,0,0]
   }
   return document
+
+def addxpstats(username, gametype, stats):
+  if checkxpstats(username) == False:
+    document = [{
+    "Username": username,
+    # [times won, times lost, money earned]
+    "MenCalc": [0,0,0],
+    # [times won, times lost, money earned]
+    "Trivia": [0,0,0],
+    # [times won, times lost, money earned]
+    "Unscramble": [0,0,0]
+    }]
+    xpstatscol.insert_many(document)
+  userstats = checkxpstats(username)
+  if gametype == "mencalc":
+    doc = userstats['MenCalc']
+    new0 = stats[0] + doc[0]
+    new1 = stats[1] + doc[1]
+    new2 = stats[2] + doc[2]
+    newdoc = [new0, new1, new2]
+    del userstats['MenCalc']
+    userstats['MenCalc'] = newdoc
+  if gametype == "trivia":
+    doc = userstats['Trivia']
+    new0 = stats[0] + doc[0]
+    new1 = stats[1] + doc[1]
+    new2 = stats[2] + doc[2]
+    newdoc = [new0, new1, new2]
+    del userstats['Trivia']
+    userstats['Trivia'] = newdoc
+  if gametype == "unscramble":
+    doc = userstats['Unscramble']
+    new0 = stats[0] + doc[0]
+    new1 = stats[1] + doc[1]
+    new2 = stats[2] + doc[2]
+    newdoc = [new0, new1, new2]
+    del userstats['Unscramble']
+    userstats['Unscramble'] = newdoc
+  xpstatscol.delete_one({"Username": username})
+  xpstatscol.insert_many([userstats])
 
 def makeaccount(username, password, passwordagain):
   if len(username) > 25:
