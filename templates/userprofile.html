@@ -3,13 +3,14 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <title>jasonism - Trivia</title>
+    <title>jasonism - {{user['Username']}}'s Profile</title>
     <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='block.css') }}" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
   </head>
   <body>
     <div class="header">
-      <h1>Trivia</h1>
+      <h1>{{user['Username']}}'s profile</h1>
     </div>
     <div class="navbar">
       <a class="nav-link nav-link-ltr" href="/">Home</a>
@@ -20,17 +21,28 @@
       <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
     </div>
     <div class="content">
-      {% if error != None and error != False and error != "" %}
-        <p>{{error}}</p>
-        <br>
+      <h2>{{user['Username']}}</h2>
+      {% if user['Description'] == None %}
+        <p><strong>{{user['Username']}} doesn't have a description!</strong></p>
+      {% else %}
+        <p><strong>{{user['Description']}}</strong></p>
       {% endif %}
       <p>XP: {{user['XP']}}</p>
       <p>Money: {{user['Money']}}</p>
-      <h3>{{question}}</h3>
-      {% for answer in answers %}
-        <a href="/trivia/{{answer}}">{{answer}}</a>
-        <br>
-      {% endfor %}
+      <p>Level: {{user['Level']}}</p>
+      <a href="/gamblingstats/@{{user['Username']}}">{{user['Username']}}'s Gambling Stats</a>
+      <br>
+      <a href="/xpstats/@{{user['Username']}}">{{user['Username']}}'s XP Stats</a>
+      <hr>
+      <div class="container">
+        <div class="grid">
+          {% for land in user['Block'] %}
+            {% set items = ['wood', 'hair', 'beard', 'face']%}
+            <a href="/@{{user['Username']}}" class="{{items[land]}}"></a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
     <script src="{{url_for('static', filename='sticky.js')}}"></script>
   </body>
 </html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>jasonism - Your Gambling Stats</title>
+    <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='block.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>Your Gambling Stats</h1>
+    </div>
+    <div class="navbar">
+      <a class="nav-link nav-link-ltr" href="/">Home</a>
+      <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
+      <a class="nav-link nav-link-ltr" href="/notifs">Notifications</a>
+      <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
+      <a class="nav-link nav-link-ltr" href="/settings">Settings</a>
+      <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
+    </div>
+    <div class="content">
+      <h2>{{stats['Username']}}</h2>
+      <h3>Flip Coin</h3>
+      <p>Amount of times won: {{stats['Flipcoin'][0]}}</p>
+      <p>Amount of times lost: {{stats['Flipcoin'][1]}}</p>
+      <p>Amount of ∆ won: {{stats['Flipcoin'][2]}}</p>
+      <p>Amount of ∆ gambled altogether: {{stats['Flipcoin'][3]}}</p>
+      {% set timesplayedfc = stats['Flipcoin'][0] + stats['Flipcoin'][1] %}
+      <p>Amount of times played altogether: {{timesplayedfc}}</p>
+      <br>
+      <h3>Roll Dice</h3>
+      <p>Amount of times won: {{stats['Rolldice'][0]}}</p>
+      <p>Amount of times lost: {{stats['Rolldice'][1]}}</p>
+      <p>Amount of ∆ won: {{stats['Rolldice'][2]}}</p>
+      <p>Amount of ∆ gambled altogether: {{stats['Rolldice'][3]}}</p>
+      {% set timesplayedrd = stats['Rolldice'][0] + stats['Rolldice'][1] %}
+      <p>Amount of times played altogether: {{timesplayedrd}}</p>
+      <br>
+      <h3>Cup Game</h3>
+      <p>Amount of times won: {{stats['Cupgame'][0]}}</p>
+      <p>Amount of times lost: {{stats['Cupgame'][1]}}</p>
+      <p>Amount of ∆ won: {{stats['Cupgame'][2]}}</p>
+      <p>Amount of ∆ gambled altogether: {{stats['Cupgame'][3]}}</p>
+      {% set timesplayedcg = stats['Cupgame'][0] + stats['Cupgame'][1] %}
+      <p>Amount of times played altogether: {{timesplayedcg}}</p>
+      <br>
+      <h3>RPS</h3>
+      <p>Amount of times won: {{stats['RPS'][0]}}</p>
+      <p>Amount of times lost: {{stats['RPS'][1]}}</p>
+      <p>Amount of times drawed: {{stats['RPS'][2]}}</p>
+      <p>Amount of ∆ won: {{stats['RPS'][3]}}</p>
+      <p>Amount of ∆ gambled altogether: {{stats['RPS'][4]}}</p>
+      {% set timesplayedrps = stats['RPS'][0] + stats['RPS'][1] + stats['RPS'][2] %}
+      <p>Amount of times played altogether: {{timesplayedrps}}</p>
+      <br>
+      <h3>Challenge RPS</h3>
+      <p>Amount of times won: {{stats['ChallengeRPS'][0]}}</p>
+      <p>Amount of times lost: {{stats['ChallengeRPS'][1]}}</p>
+      <p>Amount of times drawed: {{stats['ChallengeRPS'][2]}}</p>
+      <p>Amount of ∆ won: {{stats['ChallengeRPS'][3]}}</p>
+      <p>Amount of ∆ gambled altogether: {{stats['ChallengeRPS'][4]}}</p>
+      {% set timesplayedcrps = stats['ChallengeRPS'][0] + stats['ChallengeRPS'][1] + stats['ChallengeRPS'][2] %}
+      <p>Amount of times played altogether: {{timesplayedcrps}}</p>
+    </div>
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
+  </body>
+</html>

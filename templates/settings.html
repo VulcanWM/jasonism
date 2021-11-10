@@ -3,14 +3,13 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <title>jasonism - Unscramble word</title>
+    <title>jasonism - Settings</title>
     <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
-    <script src="{{url_for('static', filename='sticky.js')}}"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
   </head>
   <body>
     <div class="header">
-      <h1>Unscrable Word</h1>
+      <h1>jasonism</h1>
     </div>
     <div class="navbar">
       <a class="nav-link nav-link-ltr" href="/">Home</a>
@@ -25,13 +24,17 @@
         <p>{{error}}</p>
         <br>
       {% endif %}
-      <p>Money: {{user['Money']}}</p>
-      <p>XP: {{user['XP']}}</p>
-      <h3>{{shuffle}}</h3>
-      <form method="POST" action="/unscrambleword/{{shuffle}}">
-        <input class="login-form-input" placeholder="unscrambled word" type="text" name="word" id="word" required><br>
-        <button>answer</button>
+      <form method="POST" action="/changeblockname">
+        <h2>Change Block Name</h2>
+        <input class="login-form-input" placeholder="blockname" name="blockname" autocomplete="off" value="{{user['BlockName']}}" required><br>
+        <button class="login-form-button">change block name</button>
       </form>
-      <p>You have to do it under 30 seconds to earn the ∆ and XP!</p>
+      <form method="POST" action="/changedesc">
+        <h2>Change Description</h2>
+        <input class="login-form-input" placeholder="blockname" name="desc" autocomplete="off" value="{{user['Description']}}" required><br>
+        <button class="login-form-button">change description</button>
+      </form>
+    </div>
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
   </body>
 </html>

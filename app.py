@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, request
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc
+import datetime
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -53,8 +54,10 @@ def loginfunc():
       return render_template("login.html", error="That is not a username!")
     password = request.form['password']
     if check_password_hash(gethashpass(username), password) == False:
+      addlog(f"{username} entered the wrong password")
       return render_template("login.html", error="Wrong password!")
     addcookie("User", username)
+    addlog(f"{username} logged in")
     return redirect("/")
   else:
     return redirect("/")
@@ -64,7 +67,9 @@ def logout():
   if getcookie("User") == False:
     return redirect("/")
   else:
+    username = getcookie("User")
     delcookies()
+    addlog(f"{username} logged out")
     return redirect("/")
 
 @app.route("/profile")
@@ -129,7 +134,10 @@ def triviaanswer(guess):
     difficulty = getcookie("Difficulty")
     xp = xps[difficulty]
     money = moneys[difficulty]
+    addxpstats(getcookie("User"), "trivia", [1,0,xp])
     addxpmoney(getcookie("User"), xp, money)
+  else:
+    addxpstats(getcookie("User"), "trivia", [0,1,0])
   return redirect("/trivia")
 
 @app.route("/trivia/<guess>/<guess2>")
@@ -244,7 +252,10 @@ def mencalcfunc():
     answer = getcookie("MathsAns")
     guess = request.form['guess']
     if answer == guess:
+      addxpstats(getcookie("User"), "mencalc", [1, 0, 25])
       addxpmoney(getcookie("User"), 25, 250)
+    else:
+      addxpstats(getcookie("User"), "mencalc", [0,1,0])
     return redirect("/mencalc")
   else:
     return redirect("/mencalc")
@@ -275,6 +286,7 @@ def unscramblewordpage():
     return redirect("/login")
   word = randomword()
   shuffle = shuffleword(word)
+  addcookie("scrambletime", datetime.datetime.now(datetime.timezone.utc))
   return render_template("unscrambleword.html", shuffle=shuffle, user=getuser(getcookie("User")))
 
 @app.route("/unscrambleword/<shuffle>", methods=['POST', 'GET'])
@@ -282,6 +294,8 @@ def unscramblewordfunc(shuffle):
   if request.method == 'POST':
     if getcookie("User") == False:
       return redirect("/login")
+    if getcookie("scrambletime") == False:
+      return redirect("/unscrambleword")
     word = request.form['word'].lower()
     shuffleletters = []
     for letter in shuffle:
@@ -291,10 +305,22 @@ def unscramblewordfunc(shuffle):
       wordletters.append(letter)
     wordletters.sort()
     shuffleletters.sort()
+    timenow = datetime.datetime.now(datetime.timezone.utc)
+    timethen = getcookie("scrambletime")
+    diff = timenow - timethen
+    seconds = diff.total_seconds()
+    username = getcookie("User")
+    delcookies()
+    addcookie("User", username)
+    if seconds > 30:
+      return redirect("/unscrambleword")
     if wordletters == shuffleletters:
       if word in words:
         xp = random.randint(75,100)
+        addxpstats(getcookie("User"), "unscramble", [1,0,xp])
         addxpmoney(getcookie("User"), xp, xp*10)
+      else:
+        addxpstats(getcookie("User"), "unscramble", [0,1,0])
     return redirect("/unscrambleword")
   else:
     return redirect("/unscrambleword")
@@ -366,3 +392,93 @@ def acceptchallengefunc(theid, symbol):
     bet = challenge['Bet']
     acceptchallengefuncfunc(user2symbol, user1symbol, user2, user1, bet, theid)
     return redirect("/notifs")
+
+@app.route("/@<username>")
+def user(username):
+  if getcookie("User") == False:
+    pass
+  else:
+    if getcookie("User") == username:
+      return redirect("/profile")
+  user = getuser(username)
+  if user == False:
+    return redirect("/")
+  else:
+    level = str(int(user['XP'])/1000 + 1).split(".")[0]
+    user['Level'] = level
+    return render_template("userprofile.html", user=user)
+
+@app.route("/gamblingstats")
+def gamblingstats():
+  if getcookie("User") == False:
+    return redirect("/login")
+  stats = checkgambling(getcookie("User"))
+  return render_template("gamblingstats.html", stats=stats)
+
+@app.route("/gamblingstats/@<username>")
+def gamblingstatsuser(username):
+  if getcookie("User") == False:
+    pass
+  else:
+    if getcookie("User") == username:
+      return redirect("/gamblingstats")
+  stats = checkgambling(username)
+  return render_template("usergamblingstats.html", stats=stats)
+
+@app.route("/settings")
+def settings():
+  if getcookie("User") == False:
+    return redirect("/login")
+  user = getuser(getcookie("User"))
+  return render_template("settings.html", user=user)
+
+@app.route("/changeblockname", methods=['GET', 'POST'])
+def changeblocknamefunc():
+  if request.method == 'POST':
+    if getcookie("User") == False:
+      return redirect("/login")
+    newname = request.form['blockname']
+    user = getuser(getcookie("User"))
+    if user['BlockName'] == newname:
+      return redirect("/settings")
+    func = changeblockname(getcookie("User"), newname)
+    if func == True:
+      return redirect("/settings")
+    else:
+      return render_template("settings.html", error=func, user=user)
+  else:
+    return redirect("/settings")
+
+@app.route("/changedesc", methods=['GET', 'POST'])
+def changedescfunc():
+  if request.method == 'POST':
+    if getcookie("User") == False:
+      return redirect("/login")
+    desc = request.form['desc']
+    user = getuser(getcookie("User"))
+    if user['Description'] == desc:
+      return redirect("/settings")
+    func = changedesc(getcookie("User"), desc)
+    if func == True:
+      return redirect("/settings")
+    else:
+      return render_template("settings.html", error=func, user=user)
+  else:
+    return redirect("/settings")
+
+@app.route("/xpstats")
+def xpstats():
+  if getcookie("User") == False:
+    return redirect("/login")
+  stats = checkxpstats(getcookie("User"))
+  return render_template("xpstats.html", stats=stats)
+
+@app.route("/xpstats/@<username>")
+def xpstatsuser(username):
+  if getcookie("User") == False:
+    pass
+  else:
+    if getcookie("User") == username:
+      return redirect("/xpstats")
+  stats = checkgambling(username)
+  return render_template("userxpstats.html", stats=stats)

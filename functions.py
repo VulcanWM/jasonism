@@ -1,6 +1,4 @@
 from flask import session
-import dns
-import pymongo
 import os
 import datetime
 import random
@@ -8,11 +6,15 @@ import requests
 from string import printable
 from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
+import pymongo
+import dns
 
 clientm = pymongo.MongoClient(os.getenv("clientm"))
 usersdb = clientm.Users
 profilescol = usersdb.Profiles
 notifscol = usersdb.Notifications
+gamblingcol = usersdb.Gambling
+xpstatscol = usersdb.XPStats
 
 with open("static/words.txt", "r") as file:
   allText = file.read()
@@ -52,6 +54,8 @@ def getuser(username):
   mydoc = profilescol.find(myquery)
   for x in mydoc:
     if x.get("Deleted", None) == None:
+      if x.get("BlockName", None) == None:
+        x['BlockName'] = "your pet"
       return x
     return False
   return False
@@ -62,6 +66,144 @@ def checkusernamealready(username):
   for x in mydoc:
     return True
   return False
+
+def checkgambling(username):
+  myquery = { "Username": username }
+  mydoc = gamblingcol.find(myquery)
+  for x in mydoc:
+    return x
+  document = {
+    "Username": username,
+    "Flipcoin": [0,0,0,0],
+    "Rolldice": [0,0,0,0],
+    "Cupgame": [0,0,0,0],
+    "RPS": [0,0,0,0,0],
+    "ChallengeRPS": [0,0,0,0,0]
+  }
+  return document
+
+def addgambling(username, gametype, stats):
+  if checkgambling(username) == False:
+    document = [{
+      "Username": username,
+      # [wontime, losttime, wonmoney-lostmoney, howmuchgamble]
+      "Flipcoin": [0,0,0,0],
+      # [wontime, losttime, wonmoney-lostmoney, howmuchgamble]
+      "Rolldice": [0,0,0,0],
+      # [wontime, losttime, wonmoney-lostmoney, howmuchgamble]
+      "Cupgame": [0,0,0,0],
+      # [wontime, losttime, drawtime, wonmoney-lostmoney, howmuchgamble]
+      "RPS": [0,0,0,0,0],
+      # [wontime, losttime, drawtime, wonmoney-lostmoney, howmuchgamble]
+      "ChallengeRPS": [0,0,0,0,0]
+    }]
+    gamblingcol.insert_many(document)
+  userstats = checkgambling(username)
+  if gametype == "flipcoin":
+    doc = userstats['Flipcoin']
+    new0 = stats[0] + doc[0]
+    new1 = stats[1] + doc[1]
+    new2 = stats[2] + doc[2]
+    new3 = stats[3] + doc[3]
+    newdoc = [new0, new1, new2, new3]
+    del userstats['Flipcoin']
+    userstats['Flipcoin'] = newdoc
+  if gametype == "rolldice":
+    doc = userstats['Rolldice']
+    new0 = stats[0] + doc[0]
+    new1 = stats[1] + doc[1]
+    new2 = stats[2] + doc[2]
+    new3 = stats[3] + doc[3]
+    newdoc = [new0, new1, new2, new3]
+    del userstats['Rolldice']
+    userstats['Rolldice'] = newdoc
+  if gametype == "cupgame":
+    doc = userstats['Cupgame']
+    new0 = stats[0] + doc[0]
+    new1 = stats[1] + doc[1]
+    new2 = stats[2] + doc[2]
+    new3 = stats[3] + doc[3]
+    newdoc = [new0, new1, new2, new3]
+    del userstats['Cupgame']
+    userstats['Cupgame'] = newdoc
+  if gametype == "rps":
+    doc = userstats['Cupgame']
+    new0 = stats[0] + doc[0]
+    new1 = stats[1] + doc[1]
+    new2 = stats[2] + doc[2]
+    new3 = stats[3] + doc[3]
+    new4 = stats[4] + doc[4]
+    newdoc = [new0, new1, new2, new3, new4]
+    del userstats['RPS']
+    userstats['RPS'] = newdoc
+  if gametype == "challengerps":
+    doc = userstats['Cupgame']
+    new0 = stats[0] + doc[0]
+    new1 = stats[1] + doc[1]
+    new2 = stats[2] + doc[2]
+    new3 = stats[3] + doc[3]
+    new4 = stats[4] + doc[4]
+    newdoc = [new0, new1, new2, new3, new4]
+    del userstats['ChallengeRPS']
+    userstats['ChallengeRPS'] = newdoc
+  gamblingcol.delete_one({"Username": username})
+  gamblingcol.insert_many([userstats])
+
+def checkxpstats(username):
+  myquery = { "Username": username }
+  mydoc = xpstatscol.find(myquery)
+  for x in mydoc:
+    return x
+  document = {
+    "Username": username,
+    # [times won, times lost, xp earned]
+    "MenCalc": [0,0,0],
+    # [times won, times lost, xp earned]
+    "Trivia": [0,0,0],
+    # [times won, times lost, xp earned]
+    "Unscramble": [0,0,0]
+  }
+  return document
+
+def addxpstats(username, gametype, stats):
+  if checkxpstats(username) == False:
+    document = [{
+    "Username": username,
+    # [times won, times lost, money earned]
+    "MenCalc": [0,0,0],
+    # [times won, times lost, money earned]
+    "Trivia": [0,0,0],
+    # [times won, times lost, money earned]
+    "Unscramble": [0,0,0]
+    }]
+    xpstatscol.insert_many(document)
+  userstats = checkxpstats(username)
+  if gametype == "mencalc":
+    doc = userstats['MenCalc']
+    new0 = stats[0] + doc[0]
+    new1 = stats[1] + doc[1]
+    new2 = stats[2] + doc[2]
+    newdoc = [new0, new1, new2]
+    del userstats['MenCalc']
+    userstats['MenCalc'] = newdoc
+  if gametype == "trivia":
+    doc = userstats['Trivia']
+    new0 = stats[0] + doc[0]
+    new1 = stats[1] + doc[1]
+    new2 = stats[2] + doc[2]
+    newdoc = [new0, new1, new2]
+    del userstats['Trivia']
+    userstats['Trivia'] = newdoc
+  if gametype == "unscramble":
+    doc = userstats['Unscramble']
+    new0 = stats[0] + doc[0]
+    new1 = stats[1] + doc[1]
+    new2 = stats[2] + doc[2]
+    newdoc = [new0, new1, new2]
+    del userstats['Unscramble']
+    userstats['Unscramble'] = newdoc
+  xpstatscol.delete_one({"Username": username})
+  xpstatscol.insert_many([userstats])
 
 def makeaccount(username, password, passwordagain):
   if len(username) > 25:
@@ -153,30 +295,39 @@ def rps(username, guess, bet):
   comp = random.choice(['rock', 'paper', 'scissors'])
   if comp == 'rock':
     if guess == 'rock':
+      addgambling(username, "rps", [0, 0, 1, 0, bet])
       return "It was a draw! You did rock and the computer did rock!"
     if guess == 'paper':
+      addgambling(username, "rps", [1, 0, 0, bet*2, bet])
       addmoney(username, bet*2)
       return "You won! You did paper and the computer did rock!"
     if guess == 'scissors':
+      addgambling(username, "rps", [0, 1, 0, -1*bet, bet])
       addmoney(username, bet*-1)
       return "You lost! You did scissors and computer did rock!"
   if comp == 'paper':
     if guess == 'rock':
+      addgambling(username, "rps", [0, 1, 0, -1*bet, bet])
       addmoney(username, bet*-1)
       return "You lost! You did rock and the computer did paper!"
     if guess == 'paper':
+      addgambling(username, "rps", [0, 0, 1, 0, bet])
       return "It was a draw! You did paper and the computer did paper!"
     if guess == 'scissors':
+      addgambling(username, "rps", [1, 0, 0, bet*2, bet])
       addmoney(username, bet*2)
       return "You won! You did scissors and the computer did paper!"
   if comp == 'scissors':
     if guess == 'rock':
+      addgambling(username, "rps", [1, 0, 0, bet*2, bet])
       addmoney(username, bet*2)
       return "You won! You did rock and the computer did scissors!"
     if guess == 'paper':
+      addgambling(username, "rps", [0, 1, 0, -1*bet, bet])
       addmoney(username, bet*-1)
       return "You lost! You did paper and the computer did rock!"
     if guess == 'scissors':
+      addgambling(username, "rps", [0, 0, 1, 0, bet])
       return "It was a draw! You did scissors and the computer did scissors!"
 
 def addxpmoney(username, addxp, addmoney):
@@ -205,9 +356,12 @@ def cupgame(username, guess, bet):
     return "You cannot bet more than ∆10000!"
   answer = random.choice(['1', '2', '3'])
   if guess == answer:
+    # [wontime, losttime, wonmoney-lostmoney, howmuchgamble]
+    addgambling(username, "cupgame", [1,0,bet*3, bet])
     addmoney(username, bet*3)
     return f"You won! The ball landed in cup {answer}!"
   else:
+    addgambling(username, "cupgame", [0,1,bet*-1, bet])
     addmoney(username, bet*-1)
     return f"You lost! The ball landed in cup {answer} and you wanted it to land in cup {guess}!"
   
@@ -222,9 +376,11 @@ def rolldice(username, guess, bet):
     return "You cannot bet more than ∆10000!"
   answer = random.choice(['1', '2', '3', '4', '5', '6'])
   if guess == answer:
+    addgambling(username, "rolldice", [1,0,bet*6, bet])
     addmoney(username, bet*6)
     return f"You won! The dice rolled {answer}!"
   else:
+    addgambling(username, "rolldice", [0,1,bet*-1, bet])
     addmoney(username, bet*-1)
     return f"You lost! The dice rolled {answer} and you wanted it to roll {guess}!"
 
@@ -239,9 +395,11 @@ def flipcoin(username, guess, bet):
     return "You cannot bet more than ∆10000!"
   answer = random.choice(['heads', 'tails'])
   if guess == answer:
+    addgambling(username, "flipcoin", [1,0,bet*2, bet])
     addmoney(username, bet*2)
     return f"You won! The coin flipped {answer}!"
   else:
+    addgambling(username, "flipcoin", [0,1,bet*-1, bet])
     addmoney(username, bet*-1)
     return f"You lost! The coin flipped {answer} and you wanted it to flip {guess}!"
 
@@ -431,44 +589,92 @@ def denychallenge(username, theid):
 def acceptchallengefuncfunc(user2symbol, user1symbol, user2, user1, bet, theid):
   if user2symbol == 'rock':
     if user1symbol == 'rock':
+      addgambling(user1, "challengerps", [0,0,1,0,bet])
+      addgambling(user2, "challengerps", [0,0,1,0,bet])
       addnotif(user1, f"The RPS game between you and {user2} was a draw! You didn't win or lose anything!", "Normal")
       addnotif(user2, f"The RPS game between you and {user1} was a draw! You didn't win or lose anything!", "Normal")
     if user1symbol == 'paper':
+      addgambling(user1, "challengerps", [1,0,0,bet,bet])
+      addgambling(user2, "challengerps", [0,1,0,bet*-1,bet])
       addmoney(user1, bet)
       addmoney(user2, bet*-1)
       addnotif(user1, f"You won the RPS game between you and {user2}! You won ∆{str(bet)}!", "Normal")
       addnotif(user2, f"You lost the RPS game between you and {user1}! You lost ∆{str(bet)}!", "Normal")
     if user1symbol == 'scissors':
+      addgambling(user1, "challengerps", [0,1,0,bet*-1,bet])
+      addgambling(user2, "challengerps", [1,0,0,bet,bet])
       addmoney(user1, bet*-1)
       addmoney(user2, bet)
       addnotif(user1, f"You lost the RPS game between you and {user2}! You lost ∆{str(bet)}!", "Normal")
       addnotif(user2, f"You won the RPS game between you and {user1}! You won ∆{str(bet)}!", "Normal")
   if user2symbol == 'paper':
     if user1symbol == 'rock':
+      addgambling(user1, "challengerps", [0,1,0,bet*-1,bet])
+      addgambling(user2, "challengerps", [1,0,0,bet,bet])
       addmoney(user1, bet*-1)
       addmoney(user2, bet)
       addnotif(user1, f"You lost the RPS game between you and {user2}! You lost ∆{str(bet)}!", "Normal")
       addnotif(user2, f"You won the RPS game between you and {user1}! You won ∆{str(bet)}!", "Normal")
     if user1symbol == 'paper':
+      addgambling(user1, "challengerps", [0,0,1,0,bet])
+      addgambling(user2, "challengerps", [0,0,1,0,bet])
       addnotif(user1, f"The RPS game between you and {user2} was a draw! You didn't win or lose anything!", "Normal")
       addnotif(user2, f"The RPS game between you and {user1} was a draw! You didn't win or lose anything!", "Normal")
     if user1symbol == 'scissors':
+      addgambling(user1, "challengerps", [1,0,0,bet,bet])
+      addgambling(user2, "challengerps", [0,1,0,bet*-1,bet])
       addmoney(user1, bet)
       addmoney(user2, bet*-1)
       addnotif(user1, f"You won the RPS game between you and {user2}! You won ∆{str(bet)}!", "Normal")
       addnotif(user2, f"You lost the RPS game between you and {user1}! You lost ∆{str(bet)}!", "Normal")
   if user2symbol == 'scissors':
     if user1symbol == 'rock':
+      addgambling(user1, "challengerps", [1,0,0,bet,bet])
+      addgambling(user2, "challengerps", [0,1,0,bet*-1,bet])
       addmoney(user1, bet)
       addmoney(user2, bet*-1)
       addnotif(user1, f"You won the RPS game between you and {user2}! You won ∆{str(bet)}!", "Normal")
       addnotif(user2, f"You lost the RPS game between you and {user1}! You lost ∆{str(bet)}!", "Normal")
     if user1symbol == 'paper':
+      addgambling(user1, "challengerps", [0,1,0,bet*-1,bet])
+      addgambling(user2, "challengerps", [1,0,0,bet,bet])
       addmoney(user1, bet*-1)
       addmoney(user2, bet)
       addnotif(user1, f"You lost the RPS game between you and {user2}! You lost ∆{str(bet)}!", "Normal")
       addnotif(user2, f"You won the RPS game between you and {user1}! You won ∆{str(bet)}!", "Normal")
     if user1symbol == 'scissors':
+      addgambling(user1, "challengerps", [0,0,1,0,bet])
+      addgambling(user2, "challengerps", [0,0,1,0,bet])
       addnotif(user1, f"The RPS game between you and {user2} was a draw! You didn't win or lose anything!", "Normal")
       addnotif(user2, f"The RPS game between you and {user1} was a draw! You didn't win or lose anything!", "Normal")
   notifscol.delete_one({"_id": ObjectId(theid)})
+
+def changeblockname(username, newname):
+  user = getuser(username)
+  if len(newname) > 15:
+    return "Your pet block's name cannot be more than 16 letters long!"
+  if set(newname).difference(printable):
+    return "Your pet block's name cannot include any special letters!"
+  del user['BlockName']
+  user['BlockName'] = newname
+  profilescol.delete_one({"Username": username})
+  profilescol.insert_many([user])
+  return True
+
+def changedesc(username, desc):
+  user = getuser(username)
+  if len(desc) > 159:
+    return "Your description cannot be more than 160 letters long!"
+  if set(desc).difference(printable):
+    return "Your description cannot include any special letters!"
+  del user['Description']
+  user['Description'] = desc
+  profilescol.delete_one({"Username": username})
+  profilescol.insert_many([user])
+  return True
+
+def addlog(log):
+  file_object = open('.log', 'a')
+  x = str(datetime.datetime.now())
+  file_object.write(f'{x}: {log}\n')
+  file_object.close()

@@ -17,6 +17,7 @@
       <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
       <a class="nav-link nav-link-ltr" href="/notifs">Notifications</a>
       <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
+      <a class="nav-link nav-link-ltr" href="/settings">Settings</a>
       <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
     </div>
     <div class="content">
@@ -25,13 +26,25 @@
         <br>
       {% endif %}
       <h2>{{user['Username']}}</h2>
+      {% if user['Description'] == None %}
+        <p><strong>You don't have a description!</strong></p>
+      {% else %}
+        <p><strong>{{user['Description']}}</strong></p>
+      {% endif %}
       <p>XP: {{user['XP']}}</p>
       <p>Money: {{user['Money']}}</p>
       <p>Level: {{user['Level']}}</p>
-      <a href="/makeblockbigger" class="hoverlink">Make your block bigger</a>
+      <a href="/gamblingstats">Your Gambling Stats</a>
+      <br>
+      <a href="/xpstats">Your XP Stats</a>
+      <br>
+      <br>
+      <a href="/makeblockbigger" class="hoverlink">Make {{user['BlockName']}} bigger</a>
       <br>
       <p>Click on the block you want to upgrade, to updgrade it. It will cost ∆5000 to upgrade each block.</p>
-      <p>You can upgrade each block of the block three times. The first time by giving it hair, the second time by giving it a beard, and the third time by giving it a face.</p>
+      <p>You can upgrade each block of {{user['BlockName']}} three times. The first time by giving it hair, the second time by giving it a beard, and the third time by giving it a face.</p>
+      <hr>
+      <h3>{{user['BlockName']}}</h3>
       <div class="container">
         <div class="grid">
           {% set count = namespace(value=0) %}
