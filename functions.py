@@ -15,6 +15,7 @@ profilescol = usersdb.Profiles
 notifscol = usersdb.Notifications
 gamblingcol = usersdb.Gambling
 xpstatscol = usersdb.XPStats
+verificationcol = usersdb.Verification
 
 with open("static/words.txt", "r") as file:
   allText = file.read()
@@ -34,6 +35,13 @@ def getcookie(key):
       return False
   except:
     return False
+
+def checkverification(theid):
+  myquery = {"_id": ObjectId(theid)}
+  mydoc = verificationcol.find(myquery)
+  for x in mydoc:
+    return x
+  return False
 
 def gethashpass(username):
   myquery = { "Username": username }
@@ -127,7 +135,7 @@ def addgambling(username, gametype, stats):
     del userstats['Cupgame']
     userstats['Cupgame'] = newdoc
   if gametype == "rps":
-    doc = userstats['Cupgame']
+    doc = userstats['RPS']
     new0 = stats[0] + doc[0]
     new1 = stats[1] + doc[1]
     new2 = stats[2] + doc[2]
@@ -137,7 +145,7 @@ def addgambling(username, gametype, stats):
     del userstats['RPS']
     userstats['RPS'] = newdoc
   if gametype == "challengerps":
-    doc = userstats['Cupgame']
+    doc = userstats['ChallengeRPS']
     new0 = stats[0] + doc[0]
     new1 = stats[1] + doc[1]
     new2 = stats[2] + doc[2]
@@ -356,7 +364,6 @@ def cupgame(username, guess, bet):
     return "You cannot bet more than ∆10000!"
   answer = random.choice(['1', '2', '3'])
   if guess == answer:
-    # [wontime, losttime, wonmoney-lostmoney, howmuchgamble]
     addgambling(username, "cupgame", [1,0,bet*3, bet])
     addmoney(username, bet*3)
     return f"You won! The ball landed in cup {answer}!"
@@ -659,6 +666,7 @@ def changeblockname(username, newname):
   user['BlockName'] = newname
   profilescol.delete_one({"Username": username})
   profilescol.insert_many([user])
+  addlog(f"{username} changed their name to {newname}")
   return True
 
 def changedesc(username, desc):
@@ -671,6 +679,7 @@ def changedesc(username, desc):
   user['Description'] = desc
   profilescol.delete_one({"Username": username})
   profilescol.insert_many([user])
+  addlog(f"{username} changed their description")
   return True
 
 def addlog(log):
@@ -678,3 +687,12 @@ def addlog(log):
   x = str(datetime.datetime.now())
   file_object.write(f'{x}: {log}\n')
   file_object.close()
+
+def changeemail(username, email):
+  user = getuser(username)
+  email = user.get("Email", None)
+  if email != None:
+    del user['Email']
+  user['Email'] = email
+  profilescol.delete_one({"Username": username})
+  profilescol.insert_many([user])

@@ -32,6 +32,7 @@ def signupfunc():
     passwordagain = request.form['passwordagain']
     func = makeaccount(username, password, passwordagain)
     if func == True:
+      addlog(f"{username} created an account")
       addcookie("User", username)
       return redirect("/")
     else:
@@ -153,9 +154,11 @@ def triviaanswerwithslash(guess, guess2):
     difficulty = getcookie("Difficulty")
     xp = xps[difficulty]
     money = moneys[difficulty]
+    addxpstats(getcookie("User"), "trivia", [1,0,xp])
     addxpmoney(getcookie("User"), xp, money)
+  else:
+    addxpstats(getcookie("User"), "trivia", [0,1,0])
   return redirect("/trivia")
-
 
 @app.route("/cupgame")
 def cupgamepage():
