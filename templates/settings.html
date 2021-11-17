@@ -34,6 +34,11 @@
         <input class="login-form-input" placeholder="blockname" name="desc" autocomplete="off" value="{{user['Description']}}" required><br>
         <button class="login-form-button">change description</button>
       </form>
+      <form method="POST" action="/changeemail">
+        <h2>Change Email</h2>
+        <input class="login-form-input" placeholder="email" name="theemail" autocomplete="off" type="email" value="{{user['Email']}}" required><br>
+        <button class="login-form-button">change email</button>
+      </form>
     </div>
     <script src="{{url_for('static', filename='sticky.js')}}"></script>
   </body>

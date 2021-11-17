@@ -15,7 +15,7 @@
       <div class="navbar">
         <a class="nav-link nav-link-ltr" href="/">Home</a>
         <a class="nav-link nav-link-ltr" href="/login">Login</a>
-        <a class="nav-link nav-link-ltr" href="/login">Signup</a>
+        <a class="nav-link nav-link-ltr" href="/signup">Signup</a>
         <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
       </div>
     {% else %}
@@ -33,6 +33,9 @@
         <p>Hi!</p>
       {% else %}
         <p>Hi {{user['Username']}}</p>
+      {% endif %}
+      {% if text != False and text != None and text != "" %}
+        <p>{{text}}</p>
       {% endif %}
       <p>Jason is basically the immortal god of block of woods. Below is a picture of him:</p>
       <img src="{{url_for('static', filename='jason.jpeg')}}" alt="jason" height="200" width="400"></img>
