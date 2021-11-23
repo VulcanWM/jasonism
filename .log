@@ -12,5 +12,9 @@
 2021-11-17 21:30:38.752352: hi changed their name to jason
 2021-11-17 21:30:43.160003: somerandom has been verified
 2021-11-17 21:31:09.241563: somerandom logged in
+<<<<<<< HEAD
 2021-11-17 21:31:16.847583: somerandom changed their name to hi2021-11-21 11:18:51.471624: hi logged in
 2021-11-23 08:10:34.823927: hi logged in
+=======
+2021-11-17 21:31:16.847583: somerandom changed their name to hi
+>>>>>>> a4ba82d3deb0824464f63cf749590f4babae86ec

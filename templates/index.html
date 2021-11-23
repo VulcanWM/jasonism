@@ -12,8 +12,28 @@
     <div class="header">
       <h1>jasonism</h1>
     </div>
+<<<<<<< HEAD
     <div class="navbar">
     </div>
+=======
+    {% if user == False %}
+      <div class="navbar">
+        <a class="nav-link nav-link-ltr" href="/">Home</a>
+        <a class="nav-link nav-link-ltr" href="/login">Login</a>
+        <a class="nav-link nav-link-ltr" href="/signup">Signup</a>
+        <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
+      </div>
+    {% else %}
+      <div class="navbar">
+        <a class="nav-link nav-link-ltr" href="/">Home</a>
+        <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
+        <a class="nav-link nav-link-ltr" href="/notifs">Notifications</a>
+        <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
+        <a class="nav-link nav-link-ltr" href="/settings">Settings</a>
+        <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
+      </div>
+    {% endif %}
+>>>>>>> a4ba82d3deb0824464f63cf749590f4babae86ec
     <div class="content">
       {% if user == False %}
         <script>
