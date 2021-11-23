@@ -6,6 +6,7 @@
     <title>jasonism - Your Profile</title>
     <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ url_for('static', filename='block.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
   </head>
   <body>
@@ -13,14 +14,11 @@
       <h1>Your Profile</h1>
     </div>
     <div class="navbar">
-      <a class="nav-link nav-link-ltr" href="/">Home</a>
-      <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
-      <a class="nav-link nav-link-ltr" href="/notifs">Notifications</a>
-      <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
-      <a class="nav-link nav-link-ltr" href="/settings">Settings</a>
-      <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
     </div>
     <div class="content">
+      <script>
+        navbaredit("yes")
+      </script>
       {% if error != None and error != False and error != "" %}
         <p>{{error}}</p>
         <br>
@@ -31,6 +29,7 @@
       {% else %}
         <p><strong>{{user['Description']}}</strong></p>
       {% endif %}
+      <p>Verified: {{user.get("Verified", False)}}
       <p>XP: {{user['XP']}}</p>
       <p>Money: {{user['Money']}}</p>
       <p>Level: {{user['Level']}}</p>
@@ -56,6 +55,5 @@
         </div>
       </div>
     </div>
-    <script src="{{url_for('static', filename='sticky.js')}}"></script>
   </body>
 </html>

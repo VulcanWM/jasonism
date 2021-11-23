@@ -6,6 +6,7 @@
     <title>jasonism - {{user['Username']}}'s Profile</title>
     <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ url_for('static', filename='block.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
   </head>
   <body>
@@ -13,14 +14,17 @@
       <h1>{{user['Username']}}'s profile</h1>
     </div>
     <div class="navbar">
-      <a class="nav-link nav-link-ltr" href="/">Home</a>
-      <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
-      <a class="nav-link nav-link-ltr" href="/notifs">Notifications</a>
-      <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
-      <a class="nav-link nav-link-ltr" href="/settings">Settings</a>
-      <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
     </div>
     <div class="content">
+      {% if logged == False %}
+        <script>
+          navbaredit("no")
+        </script>
+      {% else %}
+        <script>
+          navbaredit("yes")
+        </script>
+      {% endif %}
       <h2>{{user['Username']}}</h2>
       {% if user['Description'] == None %}
         <p><strong>{{user['Username']}} doesn't have a description!</strong></p>
@@ -43,6 +47,5 @@
         </div>
       </div>
     </div>
-    <script src="{{url_for('static', filename='sticky.js')}}"></script>
   </body>
 </html>

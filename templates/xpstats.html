@@ -6,6 +6,7 @@
     <title>jasonism - Your XP Stats</title>
     <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ url_for('static', filename='block.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
   </head>
   <body>
@@ -13,14 +14,11 @@
       <h1>Your XP Stats</h1>
     </div>
     <div class="navbar">
-      <a class="nav-link nav-link-ltr" href="/">Home</a>
-      <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
-      <a class="nav-link nav-link-ltr" href="/notifs">Notifications</a>
-      <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
-      <a class="nav-link nav-link-ltr" href="/settings">Settings</a>
-      <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
     </div>
     <div class="content">
+      <script>
+        navbaredit("yes")
+      </script>
       <h2>{{stats['Username']}}</h2>
       <h3>MenCalc</h3>
       <p>Amount of times won: {{stats['MenCalc'][0]}}</p>
@@ -43,6 +41,5 @@
       {% set timesplayedt = stats['Trivia'][0] + stats['Trivia'][1] %}
       <p>Amount of times played altogether: {{timesplayedt}}</p>
     </div>
-    <script src="{{url_for('static', filename='sticky.js')}}"></script>
   </body>
 </html>

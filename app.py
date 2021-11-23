@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request
 import datetime
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -88,6 +88,8 @@ def makeblockbiggerpage():
   if getcookie("User") == False:
     return redirect("/login")
   else:
+    if getuser(getcookie("User")).get("Verified", False) == False:
+      return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
     func = makeblockbigger(getcookie("User"))
     if func == True:
       return redirect("/profile")
@@ -101,6 +103,8 @@ def makeblockbiggerpage():
 def trivia():
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   username = getcookie("User")
   delcookies()
   question = getquestion()['results'][0]
@@ -127,6 +131,8 @@ def trivia():
 def triviaanswer(guess):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   if getcookie("Answer") == False:
     return redirect("/trivia")
   if getcookie("Answer") == guess:
@@ -145,6 +151,8 @@ def triviaanswer(guess):
 def triviaanswerwithslash(guess, guess2):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   if getcookie("Answer") == False:
     return redirect("/trivia")
   guess = guess + "/" + guess2
@@ -164,13 +172,16 @@ def triviaanswerwithslash(guess, guess2):
 def cupgamepage():
   if getcookie("User") == False:
     return redirect("/login")
-  else:
-    return render_template("cupgame.html", user=getuser(getcookie("User")))
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
+  return render_template("cupgame.html", user=getuser(getcookie("User")))
 
 @app.route("/cupgame/<guess>/<bet>")
 def cupgamefunc(guess, bet):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   func = cupgame(getcookie("User"), guess, bet)
   return render_template("cupgame.html", error=func, user=getuser(getcookie("User")))
 
@@ -178,19 +189,24 @@ def cupgamefunc(guess, bet):
 def cupgameerror(guess):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   return render_template("cupgame.html", error="You have to enter a bet amount!", user=getuser(getcookie("User")))
 
 @app.route("/flipcoin")
 def flipcoinpage():
   if getcookie("User") == False:
     return redirect("/login")
-  else:
-    return render_template("flipcoin.html", user=getuser(getcookie("User")))
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
+  return render_template("flipcoin.html", user=getuser(getcookie("User")))
 
 @app.route("/flipcoin/<guess>/<bet>")
 def flipcoinfunc(guess, bet):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   func = flipcoin(getcookie("User"), guess, bet)
   return render_template("flipcoin.html", error=func, user=getuser(getcookie("User")))
 
@@ -198,19 +214,24 @@ def flipcoinfunc(guess, bet):
 def flipcoinerror(guess):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   return render_template("flipcoin.html", error="You have to enter a bet amount!", user=getuser(getcookie("User")))
 
 @app.route("/rps")
 def rpspage():
   if getcookie("User") == False:
     return redirect("/login")
-  else:
-    return render_template("rps.html", user=getuser(getcookie("User")))
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
+  return render_template("rps.html", user=getuser(getcookie("User")))
 
 @app.route("/rps/<guess>/<bet>")
 def rpsfunc(guess, bet):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   func = rps(getcookie("User"), guess, bet)
   return render_template("rps.html", error=func, user=getuser(getcookie("User")))
 
@@ -218,19 +239,24 @@ def rpsfunc(guess, bet):
 def rpserror(guess):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   return render_template("rps.html", error="You have to enter a bet amount!", user=getuser(getcookie("User")))
 
 @app.route("/rolldice")
 def rolldicepage():
   if getcookie("User") == False:
     return redirect("/login")
-  else:
-    return render_template("rolldice.html", user=getuser(getcookie("User")))
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
+  return render_template("rolldice.html", user=getuser(getcookie("User")))
 
 @app.route("/rolldice/<guess>/<bet>")
 def rolldicefunc(guess, bet):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   func = rolldice(getcookie("User"), guess, bet)
   return render_template("rolldice.html", error=func, user=getuser(getcookie("User")))
 
@@ -238,12 +264,16 @@ def rolldicefunc(guess, bet):
 def rolldiceerror(guess):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   return render_template("rolldice.html", error="You have to enter a bet amount!", user=getuser(getcookie("User")))
 
 @app.route("/mencalc")
 def mencalcpage():
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   ques = mencalc()
   return render_template("mencalc.html", question=ques, user=getuser(getcookie("User")))
 
@@ -252,6 +282,8 @@ def mencalcfunc():
   if request.method == 'POST':
     if getcookie("User") == False:
       return redirect("/login")
+    if getuser(getcookie("User")).get("Verified", False) == False:
+      return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
     answer = getcookie("MathsAns")
     guess = request.form['guess']
     if answer == guess:
@@ -267,6 +299,8 @@ def mencalcfunc():
 def upgradeblockpage(index):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   func = upgradeblock(getcookie("User"), index)
   if func == True:
     return redirect("/profile")
@@ -287,6 +321,8 @@ def allgames():
 def unscramblewordpage():
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   word = randomword()
   shuffle = shuffleword(word)
   addcookie("scrambletime", datetime.datetime.now(datetime.timezone.utc))
@@ -297,6 +333,8 @@ def unscramblewordfunc(shuffle):
   if request.method == 'POST':
     if getcookie("User") == False:
       return redirect("/login")
+    if getuser(getcookie("User")).get("Verified", False) == False:
+      return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
     if getcookie("scrambletime") == False:
       return redirect("/unscrambleword")
     word = request.form['word'].lower()
@@ -332,6 +370,8 @@ def unscramblewordfunc(shuffle):
 def notifs():
   if getcookie("User") == False:
     return render_template("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   notifs = getnotifs(getcookie("User"))
   allseen(getcookie("User"))
   return render_template("notifs.html", notifs=notifs)
@@ -340,6 +380,8 @@ def notifs():
 def clearnotifsapp():
   if getcookie("User") == False:
     return render_template("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   clearnotifs(getcookie("User"))
   return redirect("/notifs")
 
@@ -347,13 +389,16 @@ def clearnotifsapp():
 def challengerpspage():
   if getcookie("User") == False:
     return redirect("/login")
-  else:
-    return render_template("challengerps.html")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
+  return render_template("challengerps.html")
 
 @app.route("/challengerps/<symbol>/<enemy>/<bet>")
 def challengerpsfunc(symbol, enemy, bet):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   func = challengerps(getcookie("User"), enemy, bet, symbol)
   if func == True:
     return redirect("/notifs")
@@ -364,6 +409,8 @@ def challengerpsfunc(symbol, enemy, bet):
 def denychallengepage(theid):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   denychallenge(getcookie("User"), theid)
   return redirect("/notifs")
 
@@ -371,6 +418,8 @@ def denychallengepage(theid):
 def acceptchallengepage(theid):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   challenge = getchallenge(theid)
   if challenge == False:
     return redirect("/notifs")
@@ -382,6 +431,8 @@ def acceptchallengepage(theid):
 def acceptchallengefunc(theid, symbol):
   if getcookie("User") == False:
     return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
   challenge = getchallenge(theid)
   if challenge == False:
     return redirect("/notifs")
@@ -409,14 +460,14 @@ def user(username):
   else:
     level = str(int(user['XP'])/1000 + 1).split(".")[0]
     user['Level'] = level
-    return render_template("userprofile.html", user=user)
+    return render_template("userprofile.html", user=user, logged=getcookie("User"))
 
 @app.route("/gamblingstats")
 def gamblingstats():
   if getcookie("User") == False:
     return redirect("/login")
   stats = checkgambling(getcookie("User"))
-  return render_template("gamblingstats.html", stats=stats)
+  return render_template("gamblingstats.html", stats=stats, logged=getcookie("User"))
 
 @app.route("/gamblingstats/@<username>")
 def gamblingstatsuser(username):
@@ -440,6 +491,8 @@ def changeblocknamefunc():
   if request.method == 'POST':
     if getcookie("User") == False:
       return redirect("/login")
+    if getuser(getcookie("User")).get("Verified", False) == False:
+      return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
     newname = request.form['blockname']
     user = getuser(getcookie("User"))
     if user['BlockName'] == newname:
@@ -457,6 +510,8 @@ def changedescfunc():
   if request.method == 'POST':
     if getcookie("User") == False:
       return redirect("/login")
+    if getuser(getcookie("User")).get("Verified", False) == False:
+      return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
     desc = request.form['desc']
     user = getuser(getcookie("User"))
     if user['Description'] == desc:
@@ -484,4 +539,27 @@ def xpstatsuser(username):
     if getcookie("User") == username:
       return redirect("/xpstats")
   stats = checkgambling(username)
-  return render_template("userxpstats.html", stats=stats)
+  return render_template("userxpstats.html", stats=stats, logged=getcookie("User"))
+
+@app.route("/changeemail", methods=['POST', 'GET'])
+def changeemailfunc():
+  if request.method == 'POST':
+    if getcookie("User") == False:
+      return redirect('/login')
+    email = request.form['theemail']
+    func = changeemail(getcookie("User"), email)
+    if func == True:
+      return redirect("/settings")
+    else:
+      return render_template("index.html", text=func, user=getuser(getcookie("User")))
+  else:
+    return redirect("/settings")
+
+@app.route("/verify/<username>/<theid>")
+def verifypage(username, theid):
+  func = verify(username, theid)
+  if func == True:
+    addlog(f"{username} has been verified")
+    return redirect("/")
+  else:
+    return redirect("/")

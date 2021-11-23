@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <title>jasonism</title>
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
     <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
   </head>
@@ -11,28 +12,22 @@
     <div class="header">
       <h1>jasonism</h1>
     </div>
-    {% if user == False %}
-      <div class="navbar">
-        <a class="nav-link nav-link-ltr" href="/">Home</a>
-        <a class="nav-link nav-link-ltr" href="/login">Login</a>
-        <a class="nav-link nav-link-ltr" href="/login">Signup</a>
-        <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
-      </div>
-    {% else %}
-      <div class="navbar">
-        <a class="nav-link nav-link-ltr" href="/">Home</a>
-        <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
-        <a class="nav-link nav-link-ltr" href="/notifs">Notifications</a>
-        <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
-        <a class="nav-link nav-link-ltr" href="/settings">Settings</a>
-        <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
-      </div>
-    {% endif %}
+    <div class="navbar">
+    </div>
     <div class="content">
       {% if user == False %}
+        <script>
+          navbaredit("no")
+        </script>
         <p>Hi!</p>
       {% else %}
+        <script>
+          navbaredit("yes")
+        </script>
         <p>Hi {{user['Username']}}</p>
+      {% endif %}
+      {% if text != False and text != None and text != "" %}
+        <p>{{text}}</p>
       {% endif %}
       <p>Jason is basically the immortal god of block of woods. Below is a picture of him:</p>
       <img src="{{url_for('static', filename='jason.jpeg')}}" alt="jason" height="200" width="400"></img>
@@ -60,6 +55,5 @@
       <p>A block in your block is the area the main block increases when you make your block HUGER once.</p>
       <p>You can also make your block prettier by <a href="/profile">spending your ∆ on things for your block</a>.</p>
     </div>
-  <script src="{{url_for('static', filename='sticky.js')}}"></script>
   </body>
 </html>

@@ -6,6 +6,7 @@
     <title>jasonism - {{stats['Username']}}'s Gambling Stats</title>
     <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ url_for('static', filename='block.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
   </head>
   <body>
@@ -13,14 +14,17 @@
       <h1>{{stats['Username']}}'s Gambling Stats</h1>
     </div>
     <div class="navbar">
-      <a class="nav-link nav-link-ltr" href="/">Home</a>
-      <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
-      <a class="nav-link nav-link-ltr" href="/notifs">Notifications</a>
-      <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
-      <a class="nav-link nav-link-ltr" href="/settings">Settings</a>
-      <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
     </div>
     <div class="content">
+      {% if logged == False %}
+        <script>
+          navbaredit("no")
+        </script>
+      {% else %}
+        <script>
+          navbaredit("yes")
+        </script>
+      {% endif %}
       <h2>{{stats['Username']}}</h2>
       <h3>Flip Coin</h3>
       <p>Amount of times won: {{stats['Flipcoin'][0]}}</p>
@@ -64,6 +68,5 @@
       {% set timesplayedcrps = stats['ChallengeRPS'][0] + stats['ChallengeRPS'][1] + stats['ChallengeRPS'][2] %}
       <p>Amount of times played altogether: {{timesplayedcrps}}</p>
     </div>
-    <script src="{{url_for('static', filename='sticky.js')}}"></script>
   </body>
 </html>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width">
     <title>jasonism - Settings</title>
     <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
   </head>
   <body>
@@ -12,14 +13,11 @@
       <h1>jasonism</h1>
     </div>
     <div class="navbar">
-      <a class="nav-link nav-link-ltr" href="/">Home</a>
-      <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
-      <a class="nav-link nav-link-ltr" href="/notifs">Notifications</a>
-      <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
-      <a class="nav-link nav-link-ltr" href="/settings">Settings</a>
-      <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
     </div>
     <div class="content">
+      <script>
+        navbaredit("yes")
+      </script>
       {% if error != None and error != False and error != "" %}
         <p>{{error}}</p>
         <br>
@@ -34,7 +32,11 @@
         <input class="login-form-input" placeholder="blockname" name="desc" autocomplete="off" value="{{user['Description']}}" required><br>
         <button class="login-form-button">change description</button>
       </form>
+      <form method="POST" action="/changeemail">
+        <h2>Change Email</h2>
+        <input class="login-form-input" placeholder="email" name="theemail" autocomplete="off" type="email" value="{{user['Email']}}" required><br>
+        <button class="login-form-button">change email</button>
+      </form>
     </div>
-    <script src="{{url_for('static', filename='sticky.js')}}"></script>
   </body>
 </html>

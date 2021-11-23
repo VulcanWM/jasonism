@@ -4,10 +4,14 @@ import datetime
 import random
 import requests
 from string import printable
-from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import ssl
 import pymongo
 import dns
+from bson.objectid import ObjectId
 
 clientm = pymongo.MongoClient(os.getenv("clientm"))
 usersdb = clientm.Users
@@ -16,10 +20,38 @@ notifscol = usersdb.Notifications
 gamblingcol = usersdb.Gambling
 xpstatscol = usersdb.XPStats
 verificationcol = usersdb.Verification
+itemscol = usersdb.Items
 
 with open("static/words.txt", "r") as file:
   allText = file.read()
   words = list(map(str, allText.split()))
+
+def send_mail(usermail, username, id):  
+  context = ssl.create_default_context()
+  MAILPASS = os.getenv("MAIL_PASSWORD")
+  html = f"""
+  <h1>Hello {username}!</h1>
+  <p><strong>You have signed up for an account / or changed your email in Jasonism!</strong></p>
+  <p>Click <a href='https://jasonism.vulcanwm.repl.co/verify/{username}/{str(id)}'>here</a> to verify your account</p>
+  <p>If you didn't make this account, reply back to this email saying this isn't your account and <strong>DO NOT</strong> click on the link or the user who made the account will get verified with your email!</p>
+  """
+  message = MIMEMultipart("alternative")
+  message["Subject"] = "Jasonism Verification Email"
+  part2 = MIMEText(html, "html")
+  message.attach(part2)
+  try:
+    sendermail = "stanjasonism@gmail.com"
+    password = MAILPASS
+    gmail_server = smtplib.SMTP('smtp.gmail.com', 587)
+    gmail_server.starttls(context=context)
+    gmail_server.login(sendermail, password)
+    message["From"] = sendermail
+    message["To"] = usermail
+    gmail_server.sendmail(sendermail, usermail, message.as_string())
+    return True
+  except Exception as e:
+    return "Verification email not sent, due to some issues."
+    gmail_server.quit()
 
 def addcookie(key, value):
   session[key] = value
@@ -70,6 +102,13 @@ def getuser(username):
 
 def checkusernamealready(username):
   myquery = { "Username": username }
+  mydoc = profilescol.find(myquery)
+  for x in mydoc:
+    return True
+  return False
+
+def checkemailalready(email):
+  myquery = { "Email": email }
   mydoc = profilescol.find(myquery)
   for x in mydoc:
     return True
@@ -241,7 +280,8 @@ def makeaccount(username, password, passwordagain):
     "XP": 0,
     "Daily": [],
     "Block": [0],
-    "Description": None
+    "Description": None,
+    "Verified": False
   }]
   profilescol.insert_many(document)
   return True
@@ -666,7 +706,7 @@ def changeblockname(username, newname):
   user['BlockName'] = newname
   profilescol.delete_one({"Username": username})
   profilescol.insert_many([user])
-  addlog(f"{username} changed their name to {newname}")
+  addlog(f"{username} changed their block name to {newname}")
   return True
 
 def changedesc(username, desc):
@@ -690,9 +730,47 @@ def addlog(log):
 
 def changeemail(username, email):
   user = getuser(username)
-  email = user.get("Email", None)
-  if email != None:
+  emailold = user.get("Email", None)
+  if emailold == email:
+    return True
+  if checkemailalready(email) == True:
+    return "This email is already being used by someone else!"
+  if emailold != None:
     del user['Email']
   user['Email'] = email
+  if user.get("Verified", False) != False:
+    del user['Verified']
+  user['Verified'] = False
   profilescol.delete_one({"Username": username})
   profilescol.insert_many([user])
+  document = {
+    "Username": username
+  }
+  theid = verificationcol.insert(document)
+  func = send_mail(email, username, str(theid))
+  if func == True:
+    return True
+  else:
+    return func
+
+
+def verify(username, theid):
+  myquery = {"_id": ObjectId(theid)}
+  mydoc = verificationcol.find(myquery)
+  for x in mydoc:
+    if x['Username'] == username:
+      verificationcol.delete_one({"_id": x['_id']})
+      user = getuser(username)
+      del user['Verified']
+      user['Verified'] = True
+      profilescol.delete_one({"Username": username})
+      profilescol.insert_many([user])
+      return True
+  return False
+
+def getitems(username):
+  myquery = {"Username": username}
+  mydoc = itemscol.find(myquery)
+  for x in mydoc:
+    return x
+  return {"Username": username, "Items": {}, "Active": []}

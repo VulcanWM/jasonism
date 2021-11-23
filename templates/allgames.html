@@ -12,24 +12,20 @@
     <div class="header">
       <h1>All Games</h1>
     </div>
-    {% if user == False %}
-      <div class="navbar">
-        <a class="nav-link nav-link-ltr" href="/">Home</a>
-        <a class="nav-link nav-link-ltr" href="/login">Login</a>
-        <a class="nav-link nav-link-ltr" href="/login">Signup</a>
-        <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
-      </div>
-    {% else %}
-      <div class="navbar">
-        <a class="nav-link nav-link-ltr" href="/">Home</a>
-        <a class="nav-link nav-link-ltr" href="/profile">Profile</a>
-        <a class="nav-link nav-link-ltr" href="/notifs">Notifications</a>
-        <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
-        <a class="nav-link nav-link-ltr" href="/settings">Settings</a>
-        <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
-      </div>
-    {% endif %}
+    <div class="navbar">
+    </div>
     <div class="content">
+      {% if user == False %}
+        <script>
+          navbaredit("no")
+        </script>
+        <p>Hi!</p>
+      {% else %}
+        <script>
+          navbaredit("yes")
+        </script>
+        <p>Hi {{user['Username']}}</p>
+      {% endif %}
       <p>Things you can do to get XP and ∆:</p>
       <button onclick="gameredirect('/mencalc')">mental calculations</button>
       <button onclick="gameredirect('/trivia')">trivia questions</button>
