@@ -1,10 +1,7 @@
 from flask import Flask, render_template, redirect, request
 import datetime
-<<<<<<< HEAD
 from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems
-=======
 from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify
->>>>>>> a4ba82d3deb0824464f63cf749590f4babae86ec
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -543,11 +540,8 @@ def xpstatsuser(username):
     if getcookie("User") == username:
       return redirect("/xpstats")
   stats = checkgambling(username)
-<<<<<<< HEAD
   return render_template("userxpstats.html", stats=stats, logged=getcookie("User"))
-=======
   return render_template("userxpstats.html", stats=stats)
->>>>>>> a4ba82d3deb0824464f63cf749590f4babae86ec
 
 @app.route("/changeemail", methods=['POST', 'GET'])
 def changeemailfunc():
@@ -570,8 +564,4 @@ def verifypage(username, theid):
     addlog(f"{username} has been verified")
     return redirect("/")
   else:
-<<<<<<< HEAD
     return redirect("/")
-=======
-    return redirect("/")
->>>>>>> a4ba82d3deb0824464f63cf749590f4babae86ec

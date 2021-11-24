@@ -36,11 +36,8 @@ def send_mail(usermail, username, id):
   html = f"""
   <h1>Hello {username}!</h1>
   <p><strong>You have signed up for an account / or changed your email in Jasonism!</strong></p>
-<<<<<<< HEAD
   <p>Click <a href='https://jasonism.vulcanwm.repl.co/verify/{username}/{str(id)}'>here</a> to verify your account</p>
-=======
   <p>Click <a href='https://jasonism-fork.vulcanwm.repl.co/verify/{username}/{str(id)}'>here</a> to verify your account</p>
->>>>>>> a4ba82d3deb0824464f63cf749590f4babae86ec
   <p>If you didn't make this account, reply back to this email saying this isn't your account and <strong>DO NOT</strong> click on the link or the user who made the account will get verified with your email!</p>
   """
   message = MIMEMultipart("alternative")
