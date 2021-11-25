@@ -25,6 +25,7 @@ gamblingcol = usersdb.Gambling
 xpstatscol = usersdb.XPStats
 verificationcol = usersdb.Verification
 itemscol = usersdb.Items
+settingscol = usersdb.Settings
 
 with open("static/words.txt", "r") as file:
   allText = file.read()
@@ -582,7 +583,30 @@ def addnotif(username, notif, typename):
   else:
     notifdoc = {"Username": username, "Notification": notif, "Seen": False, "Type": "Normal"}
   notifscol.insert_many([notifdoc])
-  return True
+  if isinstance(typename, dict):
+    emailnotif = f"{notifdoc['User']} challenged you to a {notifdoc['Type']} game for ∆{notifdoc['Bet']}!"
+  else:
+    emailnotif = notif
+  usermail = getuser(username)['Email']
+  context = ssl.create_default_context()
+  MAILPASS = os.getenv("MAIL_PASSWORD")
+  html = f"""
+  <h1>Hello {username}!</h1>
+  <p><strong>New Notification!</strong></p>
+  <p>{emailnotif}</p>
+  """
+  message = MIMEMultipart("alternative")
+  message["Subject"] = "Jasonism Email Notification"
+  part2 = MIMEText(html, "html")
+  message.attach(part2)
+  sendermail = "stanjasonism@gmail.com"
+  password = MAILPASS
+  gmail_server = smtplib.SMTP('smtp.gmail.com', 587)
+  gmail_server.starttls(context=context)
+  gmail_server.login(sendermail, password)
+  message["From"] = sendermail
+  message["To"] = usermail
+  gmail_server.sendmail(sendermail, usermail, message.as_string())
 
 def clearnotifs(username):
   notifs = getnotifs(username)
@@ -779,4 +803,31 @@ def getitems(username):
   for x in mydoc:
     return x
   return {"Username": username, "Items": {}, "Active": []}
-  return False
+
+def getsettings(username):
+  myquery = {"Username": username}
+  mydoc = settingscol.find(myquery)
+  for x in mydoc:
+    return x
+  return {"Username": username, "Email": False, "Passive": False}
+
+def changesettings(username, thetype):
+  settings = getsettings(username)
+  if settings.get("_id", False) != False:
+    settingscol.delete_one({"Username": username})
+  if thetype == "email":
+    if settings['Email'] == False:
+      newsetting = True
+    if settings['Email'] == True:
+      newsetting = False
+    del settings['Email']
+    settings['Email'] = newsetting
+    x = settingscol.insert_many([settings])
+  if thetype == "passive":
+    if settings['Passive'] == False:
+      newsetting = True
+    if settings['Passive'] == True:
+      newsetting = False
+    del settings['Passive']
+    settings['Passive'] = newsetting
+    settingscol.insert_many([settings])

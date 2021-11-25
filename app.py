@@ -1,7 +1,6 @@
 from flask import Flask, render_template, redirect, request
 import datetime
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -468,7 +467,7 @@ def gamblingstats():
   if getcookie("User") == False:
     return redirect("/login")
   stats = checkgambling(getcookie("User"))
-  return render_template("gamblingstats.html", stats=stats, logged=getcookie("User"))
+  return render_template("gamblingstats.html", stats=stats)
 
 @app.route("/gamblingstats/@<username>")
 def gamblingstatsuser(username):
@@ -478,14 +477,15 @@ def gamblingstatsuser(username):
     if getcookie("User") == username:
       return redirect("/gamblingstats")
   stats = checkgambling(username)
-  return render_template("usergamblingstats.html", stats=stats)
+  return render_template("usergamblingstats.html", stats=stats, logged=getcookie("User"))
 
 @app.route("/settings")
 def settings():
   if getcookie("User") == False:
     return redirect("/login")
   user = getuser(getcookie("User"))
-  return render_template("settings.html", user=user)
+  settings = getsettings(getcookie("User"))
+  return render_template("settings.html", user=user, settings=settings)
 
 @app.route("/changeblockname", methods=['GET', 'POST'])
 def changeblocknamefunc():
@@ -541,7 +541,6 @@ def xpstatsuser(username):
       return redirect("/xpstats")
   stats = checkgambling(username)
   return render_template("userxpstats.html", stats=stats, logged=getcookie("User"))
-  return render_template("userxpstats.html", stats=stats)
 
 @app.route("/changeemail", methods=['POST', 'GET'])
 def changeemailfunc():
@@ -565,3 +564,27 @@ def verifypage(username, theid):
     return redirect("/")
   else:
     return redirect("/")
+
+@app.route("/items")
+def items():
+  if getcookie("User") == False:
+    return redirect("/login")
+  stats = getitems(getcookie("User"))
+  return render_template("items.html", user=stats)
+
+@app.route("/items/@<username>")
+def itemsuser(username):
+  if getcookie("User") == False:
+    pass
+  else:
+    if getcookie("User") == username:
+      return redirect("/items")
+  stats = getitems(username)
+  return render_template("useritems.html", user=stats, logged=getcookie("User"))
+
+@app.route("/changesettings/<thetype>")
+def changesettingspage(thetype):
+  if getcookie("User") == False:
+    return redirect("/login")
+  changesettings(getcookie("User"), thetype)
+  return redirect("/settings")

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width">
     <title>jasonism - Settings</title>
     <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='settings.css') }}" rel="stylesheet" type="text/css" />
     <script src="{{url_for('static', filename='sticky.js')}}"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
   </head>
@@ -21,6 +22,30 @@
       {% if error != None and error != False and error != "" %}
         <p>{{error}}</p>
         <br>
+      {% endif %}
+      <h3>Email Verification Notifications</h3>
+      {% if settings['Email'] == False %}
+        <label class="switch">
+          <input type="checkbox" onchange="window.location.href='/changesettings/email'">
+          <span class="slider round"></span>
+        </label>
+      {% else %}
+        <label class="switch">
+          <input type="checkbox" onchange="window.location.href='/changesettings/email'" checked>
+          <span class="slider round"></span>
+        </label>
+      {% endif %}
+      <h3>Passive Mode</h3>
+      {% if settings['Passive'] == False %}
+        <label class="switch">
+          <input type="checkbox" onchange="window.location.href='/changesettings/passive'">
+          <span class="slider round"></span>
+        </label>
+      {% else %}
+        <label class="switch">
+          <input type="checkbox" onchange="window.location.href='/changesettings/passive'" checked>
+          <span class="slider round"></span>
+        </label>
       {% endif %}
       <form method="POST" action="/changeblockname">
         <h2>Change Block Name</h2>

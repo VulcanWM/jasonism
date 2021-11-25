@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>jasonism - Your Items</title>
+    <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>Your Items</h1>
+    </div>
+    <div class="navbar">
+    </div>
+    <div class="content">
+      <script>
+        navbaredit("yes")
+      </script>
+      {% if error != None and error != False and error != "" %}
+        <p>{{error}}</p>
+        <br>
+      {% endif %}
+      <h2>{{user['Username']}}</h2>
+      {% if user['Items'] != {} %}
+        <h3>All items in your inventory:</h3>
+        {% for item in user['Items'].keys() %}
+          <p>{{user['Items'][item]}} of {{item}}</p>
+        {% endfor %}
+      {% else %}
+        <p>You don't have any items in your inventory!</p>
+      {% endif %}
+      {% if user['Active'] != [] %}
+        <h3>All your active items:</h3>
+        {% for item in user['Active'] %}
+          <p>{{item}}</p>
+        {% endfor %}
+      {% else %}
+        <p>You don't have any active items!</p>
+      {% endif %}
+    </div>
+  </body>
+</html>
