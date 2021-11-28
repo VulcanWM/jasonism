@@ -37,11 +37,13 @@
       {% endif %}
       <h3>Passive Mode</h3>
       {% if settings['Passive'] == False %}
+        <p>You need to pay ∆10000 to switch on passive mode</p>
         <label class="switch">
           <input type="checkbox" onchange="window.location.href='/changesettings/passive'">
           <span class="slider round"></span>
         </label>
       {% else %}
+        <p>Remember you payed ∆10000 to switch on passive mode</p>
         <label class="switch">
           <input type="checkbox" onchange="window.location.href='/changesettings/passive'" checked>
           <span class="slider round"></span>

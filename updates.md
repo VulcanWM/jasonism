@@ -5,3 +5,6 @@
 - Added seeing your items: `/items`
 - Added seeing another user's items: `/items/@<username>`
 - Added email notifications in `/settings`
+- Added a new jason image for the favicon, readme and main page (it's pixel)
+- Added adding passive mode so you can't interact with any users
+- Added buying passive mode (you need to pay ∆10000 every time you switch it on)

@@ -587,26 +587,29 @@ def addnotif(username, notif, typename):
     emailnotif = f"{notifdoc['User']} challenged you to a {notifdoc['Type']} game for ∆{notifdoc['Bet']}!"
   else:
     emailnotif = notif
-  usermail = getuser(username)['Email']
-  context = ssl.create_default_context()
-  MAILPASS = os.getenv("MAIL_PASSWORD")
-  html = f"""
-  <h1>Hello {username}!</h1>
-  <p><strong>New Notification!</strong></p>
-  <p>{emailnotif}</p>
-  """
-  message = MIMEMultipart("alternative")
-  message["Subject"] = "Jasonism Email Notification"
-  part2 = MIMEText(html, "html")
-  message.attach(part2)
-  sendermail = "stanjasonism@gmail.com"
-  password = MAILPASS
-  gmail_server = smtplib.SMTP('smtp.gmail.com', 587)
-  gmail_server.starttls(context=context)
-  gmail_server.login(sendermail, password)
-  message["From"] = sendermail
-  message["To"] = usermail
-  gmail_server.sendmail(sendermail, usermail, message.as_string())
+  usermail = getuser(username).get("Email", False)
+  if usermail == False:
+    pass
+  else:
+    context = ssl.create_default_context()
+    MAILPASS = os.getenv("MAIL_PASSWORD")
+    html = f"""
+    <h1>Hello {username}!</h1>
+    <p><strong>New Notification!</strong></p>
+    <p>{emailnotif}</p>
+    """
+    message = MIMEMultipart("alternative")
+    message["Subject"] = "Jasonism Email Notification"
+    part2 = MIMEText(html, "html")
+    message.attach(part2)
+    sendermail = "stanjasonism@gmail.com"
+    password = MAILPASS
+    gmail_server = smtplib.SMTP('smtp.gmail.com', 587)
+    gmail_server.starttls(context=context)
+    gmail_server.login(sendermail, password)
+    message["From"] = sendermail
+    message["To"] = usermail
+    gmail_server.sendmail(sendermail, usermail, message.as_string())
 
 def clearnotifs(username):
   notifs = getnotifs(username)
@@ -823,11 +826,16 @@ def changesettings(username, thetype):
     del settings['Email']
     settings['Email'] = newsetting
     x = settingscol.insert_many([settings])
+    return True
   if thetype == "passive":
     if settings['Passive'] == False:
+      if getuser(username)['Money'] < 10000:
+        return "You need to have ∆10000 to switch on passive mode!"
+      addmoney(username, -10000)
       newsetting = True
     if settings['Passive'] == True:
       newsetting = False
     del settings['Passive']
     settings['Passive'] = newsetting
     settingscol.insert_many([settings])
+    return True

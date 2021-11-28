@@ -399,6 +399,10 @@ def challengerpsfunc(symbol, enemy, bet):
     return redirect("/login")
   if getuser(getcookie("User")).get("Verified", False) == False:
     return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
+  if getsettings(getcookie("User"))['Passive'] == True:
+    return render_template("challengerps.html", error="You are in passive mode so you can't interact with any users!")
+  if getsettings(enemy)['Passive'] == True:
+    return render_template("challengerps.html", error=f"{enemy} is in passive mode so they can't interact with any users!")
   func = challengerps(getcookie("User"), enemy, bet, symbol)
   if func == True:
     return redirect("/notifs")
@@ -586,5 +590,8 @@ def itemsuser(username):
 def changesettingspage(thetype):
   if getcookie("User") == False:
     return redirect("/login")
-  changesettings(getcookie("User"), thetype)
-  return redirect("/settings")
+  func = changesettings(getcookie("User"), thetype)
+  if func == True:
+    return redirect("/settings")
+  else:
+    return render_template("settings.html", user=getuser(getcookie("User")), settings=getsettings(getcookie("User")), error=func)

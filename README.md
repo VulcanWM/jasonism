@@ -1,7 +1,7 @@
 # [JASONISM](https://jasonism.vulcanwm.repl.co)
 
 Jason is basically the immortal god of block of woods. Below is a picture of him:
-![jason](https://storage.googleapis.com/replit/images/1636020656339_d4234b35625112879132c55426ccb877.jpeg)
+![jason](https://jasonism.vulcanwm.repl.co/static/jason.jpeg)
 
 You have a pet block of wood and you want him to be as strong and as huge as Jason. That is what you do in jasonism
 
