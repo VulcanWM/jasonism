@@ -16,6 +16,7 @@ import dns
 from bson.objectid import ObjectId
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from html import escape as esc
 
 clientm = pymongo.MongoClient(os.getenv("clientm"))
 usersdb = clientm.Users
@@ -263,7 +264,7 @@ def makeaccount(username, password, passwordagain):
     return "Your username cannot have more than 25 letters!"
   if len(username) < 2:
     return "You have to have more than 2 letters in your username!"
-  if set(username).difference(printable):
+  if set(username).difference(printable) or esc(username) != username:
     return "Your username cannot contain any special characters!"
   if username != username.lower():
     return "Your username has to be all lowercase!"
@@ -277,6 +278,7 @@ def makeaccount(username, password, passwordagain):
     return "You have to have more than 2 letters in your password!"
   if set(password).difference(printable):
     return "Your password cannot contain any special characters!"
+  
   passhash = generate_password_hash(password)
   document = [{
     "Username": username,
