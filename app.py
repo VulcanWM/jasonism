@@ -1,9 +1,10 @@
 from flask import Flask, render_template, redirect, request
 import datetime
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem
 import os
 import random
 from werkzeug.security import check_password_hash
+from lists import shopitems, itemsdesc, buffs
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
@@ -595,3 +596,25 @@ def changesettingspage(thetype):
     return redirect("/settings")
   else:
     return render_template("settings.html", user=getuser(getcookie("User")), settings=getsettings(getcookie("User")), error=func)
+
+@app.route("/shop")
+def shoppage():
+  if getcookie("User") == False:
+    return redirect("/login")
+  else:
+    return render_template("shop.html", user=getuser(getcookie("User")), items=shopitems, itemsdesc=itemsdesc, buffs=buffs)
+
+@app.route("/buyitem", methods=['GET', 'POST'])
+def buyitemfunc():
+  if request.method == 'POST':
+    if getcookie("User") == False:
+      return redirect("/login")
+    item = request.form['item']
+    amount = request.form['amount']
+    func = buyitem(getcookie("User"), item, amount)
+    if func == True:
+      return redirect("/shop")
+    else:
+      return render_template("shop.html", user=getuser(getcookie("User")), error=func, items=shopitems, itemsdesc=itemsdesc, buffs=buffs)
+  else:
+    return redirect("/shop")

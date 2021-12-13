@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>jasonism - The Shop</title>
+    <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='block.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>The Shop</h1>
+    </div>
+    <div class="navbar">
+    </div>
+    <div class="content">
+      <script>
+        navbaredit("yes")
+      </script>
+      {% if error != None and error != False and error != "" %}
+        <p>{{error}}</p>
+        <br>
+      {% endif %}
+      <p>Money: {{user['Money']}}</p>
+      <hr>
+      <form method="POST" action="/buyitem">
+        <h2>Buy Item</h2>
+        <input class="login-form-input" placeholder="item name" name="item" autocomplete="off" type="text" required><br>
+        <input class="login-form-input" placeholder="amount" name="amount" autocomplete="off" type="number" required><br>
+      <button class="login-form-button">buy item</button>
+      <hr>
+      <h2>All Items</h2>
+      {% for item in items %}
+        <p><strong>{{itemsdesc[item]['Type']}}</strong></p>
+        <p>Price: ∆{{items[item]}}</p>
+        <p>Description: {{itemsdesc[item]['Description']}}</p>
+        <br>
+      {% endfor %}
+      {% for buff in buffs %}
+        <p><strong>BUFF</strong></p>
+        <p>Price: ∆{{buff['price']}}</p>
+        <p>Battle Boost: {{buff['battle']}}</p>
+        <br>
+      {% endfor %}
+    </div>
+  </body>
+</html>

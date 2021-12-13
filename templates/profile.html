@@ -56,6 +56,20 @@
           {% endfor %}
         </div>
       </div>
+      <!-- <script>
+        var grid = document.getElementsByClassName("grid")[0];
+        var code = 'repeat({rows}, 80px);';
+        var allland = {{user['Block']}};
+        var amount = allland.length;
+        var number = amount / 5;
+        var rows = number.split(".")[0];
+        rows = rows + 1;
+        var newcode = code.replace("{rows}", rows);
+        grid.style.display = 'grid';
+        grid.style.grid-template-columns = 'repeat(5, 80px)';
+        grid.style.grid-gap = '0px';
+        grid.style.grid-template-rows = newcode;
+      </script> -->
     </div>
   </body>
 </html>

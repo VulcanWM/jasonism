@@ -17,6 +17,7 @@ from bson.objectid import ObjectId
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from html import escape as esc
+from lists import shopitems, buffs
 
 clientm = pymongo.MongoClient(os.getenv("clientm"))
 usersdb = clientm.Users
@@ -841,3 +842,34 @@ def changesettings(username, thetype):
     settings['Passive'] = newsetting
     settingscol.insert_many([settings])
     return True
+
+def buyitem(username, item, amount):
+  item = item.lower()
+  amount = int(amount)
+  items = shopitems
+  useritems = getitems(username)
+  if item in items.keys():
+    price = items[item] * amount
+  elif item in buffs:
+    if amount != 1:
+      return "You cannot buy more than one of a buff!"
+    if useritems['Items'].get(item, 0) != 0:
+      return "You cannot buy more than one of a buff!"
+    if item in useritems['Active']:
+      return "You cannot buy more than one of a buff!"
+    price = buffs[item]['price'] * amount
+  else:
+    return "That is not a real item!"
+  user = getuser(username)
+  if user['Money'] < price:
+    return f"You don't have enough money to buy {amount} {item}!"
+  useritems = getitems(username)
+  itemamount = useritems['Items'].get(item, 0)
+  itemamount = itemamount + amount
+  if useritems['Items'].get(item, False) != False:
+    del useritems['Items'][item]
+  useritems['Items'][item] = itemamount
+  itemscol.delete_one({"Username": username})
+  itemscol.insert_many([useritems])
+  addmoney(username, -1 * price)
+  return True
