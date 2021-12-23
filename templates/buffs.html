@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>jasonism - Your Buffs</title>
+    <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='block.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{url_for('static', filename='sticky.js')}}"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>Your Buffs</h1>
+    </div>
+    <div class="navbar">
+    </div>
+    <div class="content">
+      <script>
+        navbaredit("yes")
+      </script>
+      {% if error != None and error != False and error != "" %}
+        <p>{{error}}</p>
+      {% endif %}
+      <h2>{{stats['Username']}}</h2>
+      <h3>Your Buffs</h3>
+      {% if stats['Buffs'] == [] %}
+        <p>You don't have any buffs!</p>
+      {% endif %}
+      <ul>
+        {% for buff in stats['Buffs'] %}
+          <li>{{buff}}</li>
+        {% endfor %}
+      </ul>
+      <hr>
+      <h3>Add Buff</h3>
+     <form method="POST" action="/addbuff">
+        <h2>Add Buff</h2>
+        <input class="login-form-input" placeholder="buff name" name="buffname" autocomplete="off" required><br><br>
+        <button class="login-form-button">add buff</button>
+      </form>
+    </div>
+  </body>
+</html>

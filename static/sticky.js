@@ -1,5 +1,5 @@
 window.onscroll = function() {myFunction()};
-
+var smthcool = "omgfunkey";
 var navbar = document.getElementsByClassName("navbar")[0];
 var sticky = navbar.offsetTop;
 

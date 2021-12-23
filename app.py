@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request
 import datetime
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem, additem, addbuff
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -618,3 +618,44 @@ def buyitemfunc():
       return render_template("shop.html", user=getuser(getcookie("User")), error=func, items=shopitems, itemsdesc=itemsdesc, buffs=buffs)
   else:
     return redirect("/shop")
+
+@app.route("/quickmaths", methods=['POST', 'GET'])
+def quickmaths():
+  if request.method == 'POST':
+    if getcookie("User") == False:
+      return redirect("/login")
+    if request.form['mathsanswer'] == os.getenv("FLAG1py"):
+      items = getitems(getcookie("User"))
+      if "mathstrophy" in items['Items'].keys():
+        return render_template("quickmaths.html", flag=str(os.getenv("FLAG1js")), error="You have already done this! You can only do it once!")
+      additem("mathstrophy", getcookie("User"))
+      addxpmoney(getcookie("User"), 5000, 100000)
+      return render_template("quickmaths.html", flag=str(os.getenv("FLAG1js")), error="You did it! You got 5000XP and ∆100000!")
+    else:
+      return redirect("/quickmaths")
+  else:
+    if getcookie("User") == False:
+      return redirect("/login")
+    return render_template("quickmaths.html", flag=str(os.getenv("FLAG1js")))
+
+@app.route("/buffs")
+def buffspage():
+  if getcookie("User") == False:
+    return redirect("/login")
+  stats = getitems(getcookie("User"))
+  return render_template("buffs.html", stats=stats)
+
+@app.route('/addbuff', methods=['POST', 'GET'])
+def addbufffunc():
+  if request.method == 'POST':
+    if getcookie("User") == False:
+      return redirect("/login")
+    buffname = request.form['buffname']
+    func = addbuff(buffname, getcookie("User"))
+    if func == True:
+      return redirect('/buffs')
+    else:
+      stats = getitems(getcookie("User"))
+      return render_template("buffs.html", stats=stats, error=func)
+  else:
+    return redirect("/buffs")

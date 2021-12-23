@@ -808,7 +808,7 @@ def getitems(username):
   mydoc = itemscol.find(myquery)
   for x in mydoc:
     return x
-  return {"Username": username, "Items": {}, "Active": []}
+  return {"Username": username, "Items": {}, "Active": [], "Buffs": []}
 
 def getsettings(username):
   myquery = {"Username": username}
@@ -855,7 +855,7 @@ def buyitem(username, item, amount):
       return "You cannot buy more than one of a buff!"
     if useritems['Items'].get(item, 0) != 0:
       return "You cannot buy more than one of a buff!"
-    if item in useritems['Active']:
+    if item in useritems['Buffs']:
       return "You cannot buy more than one of a buff!"
     price = buffs[item]['price'] * amount
   else:
@@ -873,3 +873,32 @@ def buyitem(username, item, amount):
   itemscol.insert_many([useritems])
   addmoney(username, -1 * price)
   return True
+
+def addbuff(buff, username):
+  useritems = getitems(username)
+  if len(buffs) == 5:
+    return "You cannot have more than 5 buffs!"
+  if buff in useritems['Buffs']:
+    return "You already have this in your buffs!"
+  if buff not in useritems['Items']:
+    return "You don't own this buff!"
+  allbuffs = useritems['Buffs']
+  allitems = useritems['Items']
+  del allitems[buff]
+  allbuffs.append(buff)
+  del useritems['Buffs']
+  useritems['Buffs'] = allbuffs
+  del useritems['Items']
+  useritems['Items'] = allitems
+  itemscol.delete_one({"Username": username})
+  itemscol.insert_many([useritems])
+  return True
+
+def additem(itemname, username):
+  useritems = getitems(username)
+  items = useritems['Items']
+  items[itemname] = 1
+  del useritems['Items']
+  useritems['Items'] = items
+  itemscol.delete_one({"Username": username})
+  itemscol.insert_many([useritems])
