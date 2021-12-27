@@ -3,3 +3,4 @@
 - Added quick maths: `/quickmaths`
 - Added seeing your buffs: `/buffs`
 - Added adding buffs: `/addbuff`
+- Added removing buffs: `/removebuff`

@@ -902,3 +902,45 @@ def additem(itemname, username):
   useritems['Items'] = items
   itemscol.delete_one({"Username": username})
   itemscol.insert_many([useritems])
+
+def removebuff(buff, username):
+  useritems = getitems(username)
+  if buff not in useritems['Buffs']:
+    return "This is not one of your buffs!"
+  allbuffs = useritems['Buffs']
+  allitems = useritems['Items']
+  allbuffs.remove(buff)
+  allitems[buff] = 1
+  del useritems['Buffs']
+  useritems['Buffs'] = allbuffs
+  del useritems['Items']
+  useritems['Items'] = allitems
+  itemscol.delete_one({"Username": username})
+  itemscol.insert_many([useritems])
+  return True
+
+def battlexp(user1, user2):
+  user1items = getitems(user1)
+  user2items = getitems(user2)
+  user1level = int(str(int(getuser(user1)['XP'])/1000 + 1).split(".")[0])
+  user2level = int(str(int(getuser(user2)['XP'])/1000 + 1).split(".")[0])
+  user1xp = user1level / 5
+  for x in user1items['Buffs']:
+    buff = buffs[x]
+    xp = buff['battle']
+    user1xp = user1xp + xp
+  user2xp = user2level / 5
+  for x in user2items['Buffs']:
+    buff = buffs[x]
+    xp = buff['battle']
+    user2xp = user2xp + xp
+  if user1xp > user2xp:
+    return f"{user1} won!"
+  elif user2xp > user1xp:
+    return f"{user2} won!"
+  else:
+    number = random.randint(1,2)
+    if number == 1:
+      return f"{user1} won!"
+    else:
+      return f"{user2} won!"

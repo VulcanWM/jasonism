@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request
 import datetime
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem, additem, addbuff
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem, additem, addbuff, removebuff
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -652,6 +652,21 @@ def addbufffunc():
       return redirect("/login")
     buffname = request.form['buffname']
     func = addbuff(buffname, getcookie("User"))
+    if func == True:
+      return redirect('/buffs')
+    else:
+      stats = getitems(getcookie("User"))
+      return render_template("buffs.html", stats=stats, error=func)
+  else:
+    return redirect("/buffs")
+
+@app.route('/removebuff', methods=['POST', 'GET'])
+def removebufffunc():
+  if request.method == 'POST':
+    if getcookie("User") == False:
+      return redirect("/login")
+    buffname = request.form['namebuff']
+    func = removebuff(buffname, getcookie("User"))
     if func == True:
       return redirect('/buffs')
     else:
