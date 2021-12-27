@@ -33,15 +33,17 @@
       <hr>
       <h2>All Items</h2>
       {% for item in items %}
+        <h3>{{item}}</h3>
         <p><strong>{{itemsdesc[item]['Type']}}</strong></p>
         <p>Price: ∆{{items[item]}}</p>
         <p>Description: {{itemsdesc[item]['Description']}}</p>
         <br>
       {% endfor %}
       {% for buff in buffs %}
+        <h3>{{buff}}</h3>
         <p><strong>BUFF</strong></p>
-        <p>Price: ∆{{buff['price']}}</p>
-        <p>Battle Boost: {{buff['battle']}}</p>
+        <p>Price: ∆{{buffs[buff]['price']}}</p>
+        <p>Battle Boost: {{buffs[buff]['battle']}}</p>
         <br>
       {% endfor %}
     </div>
