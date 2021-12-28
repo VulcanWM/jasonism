@@ -28,6 +28,7 @@ xpstatscol = usersdb.XPStats
 verificationcol = usersdb.Verification
 itemscol = usersdb.Items
 settingscol = usersdb.Settings
+battlecol = usersdb.Battle
 
 with open("static/words.txt", "r") as file:
   allText = file.read()
@@ -279,7 +280,6 @@ def makeaccount(username, password, passwordagain):
     return "You have to have more than 2 letters in your password!"
   if set(password).difference(printable):
     return "Your password cannot contain any special characters!"
-  
   passhash = generate_password_hash(password)
   document = [{
     "Username": username,
@@ -944,3 +944,17 @@ def battlexp(user1, user2):
       return f"{user1} won!"
     else:
       return f"{user2} won!"
+
+def getbattlestats(username):
+  myquery = { "Username": username }
+  mydoc = battlecol.find(myquery)
+  for x in mydoc:
+    return x
+  document = {
+    "Username": username,
+    "Count": [0,0],
+    # won, lost
+    "Money": [0,0]
+    # money won, money lost
+  }
+  return document

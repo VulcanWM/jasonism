@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request
 import datetime
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem, additem, addbuff, removebuff
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem, additem, addbuff, removebuff, getbattlestats
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -674,3 +674,20 @@ def removebufffunc():
       return render_template("buffs.html", stats=stats, error=func)
   else:
     return redirect("/buffs")
+
+@app.route("/battlestats")
+def battlestats():
+  if getcookie("User") == False:
+    return redirect("/login")
+  stats = getbattlestats(getcookie("User"))
+  return render_template("battlestats.html", stats=stats)
+
+@app.route("/battlestats/@<username>")
+def battlestatsuser(username):
+  if getcookie("User") == False:
+    pass
+  else:
+    if getcookie("User") == username:
+      return redirect("/battlestats")
+  stats = getbattlestats(username)
+  return render_template("userbattlestats.html", stats=stats, logged=getcookie("User"))
