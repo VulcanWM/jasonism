@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request
 import datetime
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem, additem, addbuff, removebuff, getbattlestats
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem, additem, addbuff, removebuff, getbattlestats, acceptchallengebattle, battle
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -400,10 +400,6 @@ def challengerpsfunc(symbol, enemy, bet):
     return redirect("/login")
   if getuser(getcookie("User")).get("Verified", False) == False:
     return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
-  if getsettings(getcookie("User"))['Passive'] == True:
-    return render_template("challengerps.html", error="You are in passive mode so you can't interact with any users!")
-  if getsettings(enemy)['Passive'] == True:
-    return render_template("challengerps.html", error=f"{enemy} is in passive mode so they can't interact with any users!")
   func = challengerps(getcookie("User"), enemy, bet, symbol)
   if func == True:
     return redirect("/notifs")
@@ -430,7 +426,11 @@ def acceptchallengepage(theid):
     return redirect("/notifs")
   if challenge['Username'] != getcookie("User"):
     return redirect("/notifs")
-  return render_template("acceptchallenge.html", challenge=challenge)
+  if challenge['Type'] == "RPS":
+    return render_template("acceptchallenge.html", challenge=challenge)
+  if challenge['Type'] == "Battle":
+    acceptchallengebattle(theid)
+    return redirect("/notifs")
 
 @app.route("/acceptchallenge/<theid>/<symbol>")
 def acceptchallengefunc(theid, symbol):
@@ -450,6 +450,9 @@ def acceptchallengefunc(theid, symbol):
     user1 = challenge['User']
     bet = challenge['Bet']
     acceptchallengefuncfunc(user2symbol, user1symbol, user2, user1, bet, theid)
+    return redirect("/notifs")
+  if challenge['Type'] == "Battle":
+    acceptchallengebattle(theid)
     return redirect("/notifs")
 
 @app.route("/@<username>")
@@ -609,6 +612,8 @@ def buyitemfunc():
   if request.method == 'POST':
     if getcookie("User") == False:
       return redirect("/login")
+    if getuser(getcookie("User")).get("Verified", False) == False:
+      return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
     item = request.form['item']
     amount = request.form['amount']
     func = buyitem(getcookie("User"), item, amount)
@@ -624,6 +629,8 @@ def quickmaths():
   if request.method == 'POST':
     if getcookie("User") == False:
       return redirect("/login")
+    if getuser(getcookie("User")).get("Verified", False) == False:
+      return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
     if request.form['mathsanswer'] == os.getenv("FLAG1py"):
       items = getitems(getcookie("User"))
       if "mathstrophy" in items['Items'].keys():
@@ -650,6 +657,8 @@ def addbufffunc():
   if request.method == 'POST':
     if getcookie("User") == False:
       return redirect("/login")
+    if getuser(getcookie("User")).get("Verified", False) == False:
+      return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
     buffname = request.form['buffname']
     func = addbuff(buffname, getcookie("User"))
     if func == True:
@@ -665,6 +674,8 @@ def removebufffunc():
   if request.method == 'POST':
     if getcookie("User") == False:
       return redirect("/login")
+    if getuser(getcookie("User")).get("Verified", False) == False:
+      return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
     buffname = request.form['namebuff']
     func = removebuff(buffname, getcookie("User"))
     if func == True:
@@ -691,3 +702,30 @@ def battlestatsuser(username):
       return redirect("/battlestats")
   stats = getbattlestats(username)
   return render_template("userbattlestats.html", stats=stats, logged=getcookie("User"))
+
+@app.route('/battle')
+def battlepage():
+  if getcookie("User") == False:
+    return redirect("/login")
+  if getuser(getcookie("User")).get("Verified", False) == False:
+    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
+  return render_template("battle.html")
+
+@app.route("/battle", methods=['POST', 'GET'])
+def battlepagefunc():
+  if request.method == 'POST':
+    if getcookie("User") == False:
+      return redirect("/login")
+    if getuser(getcookie("User")).get("Verified", False) == False:
+      return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
+    enemy = request.form['username']
+    bet = request.form['bet']
+    if bet == "" or bet == None or bet == False:
+      return render_template("battle.html", error="That is not a number!")
+    func = battle(getcookie("User"), enemy, bet)
+    if func == True:
+      return redirect('/notifs')
+    else:
+      return render_template("battle.html", error=func)
+  else:
+    return redirect("/battle")

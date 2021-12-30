@@ -567,6 +567,7 @@ def getnotifs(username):
   notifs = []
   for x in mydoc:
     notifs.append(x)
+  notifs.reverse()
   return notifs
 
 def getnotifsnotseen(username):
@@ -583,11 +584,20 @@ def addnotif(username, notif, typename):
   if isinstance(typename, dict):
     if typename['Type'] == 'RPS':
       notifdoc = {"Username": username, "Seen": False, "Type": "RPS", "Symbol": typename['Symbol'], "Bet": typename['Bet'], "User": typename['User']}
+    if typename['Type'] == "Battle":
+      notifdoc = {"Username": username, "Seen": False, "Type": "Battle", "Bet": typename['Bet'], "User": typename['User']}
+    if typename['Type'] == "BattleGif":
+      notifdoc = {"Username": username, "Seen": False, "Type": "BattleGif", "Bet": typename['Bet'], "Winner": typename['Winner'], "Message": typename['Message']}
   else:
     notifdoc = {"Username": username, "Notification": notif, "Seen": False, "Type": "Normal"}
   notifscol.insert_many([notifdoc])
   if isinstance(typename, dict):
-    emailnotif = f"{notifdoc['User']} challenged you to a {notifdoc['Type']} game for ∆{notifdoc['Bet']}!"
+    if typename['Type'] == "RPS":
+      emailnotif = f"{notifdoc['User']} challenged you to a {notifdoc['Type']} game for ∆{notifdoc['Bet']}!"
+    if typename['Type'] == "Battle":
+      emailnotif = f"{notifdoc['User']} challenged you to a {notifdoc['Type']} for ∆{notifdoc['Bet']}!"
+    if typename['Type'] == "BattleGif":
+      emailnotif = typename['Message']
   else:
     emailnotif = notif
   usermail = getuser(username).get("Email", False)
@@ -639,6 +649,10 @@ def challengerps(username, enemy, bet, symbol):
       return f"{enemy} does not have {str(bet)}!"
     if bet > getuser(username)['Money']:
       return f"You don't have {str(bet)}!"
+    if getsettings(username)['Passive'] == True:
+      return "You are in passive mode so you can't interact with any users!"
+    if getsettings(enemy)['Passive'] == True:
+      return f"{enemy} is in passive mode so they can't interact with any users!"
     thedict = {"Type": "RPS", "Symbol": symbol, "Bet": bet, "User": username}
     addnotif(enemy, None, thedict)
     addnotif(username, f"You challenged {enemy} to a RPS game for ∆{str(bet)}!", "Normal")
@@ -662,11 +676,18 @@ def denychallenge(username, theid):
     return "That is not a real challenge!"
   if challengedoc['Username'] != username:
     return "You cannot deny this challenge as it has not been directed to you!"
-  challengesender = challengedoc['User']
-  addnotif(username, f"You rejected {challengesender}'s challenge to a {challengedoc['Type']} game for ∆{str(challengedoc['Bet'])}!", "Normal")
-  addnotif(challengesender, f"{username} rejected your challenged to a {challengedoc['Type']} game for ∆{str(challengedoc['Bet'])}!", "Normal")
-  notifscol.delete_one({"_id": ObjectId(theid)})
-  return True
+  if challengedoc['Type'] == "RPS":
+    challengesender = challengedoc['User']
+    addnotif(username, f"You rejected {challengesender}'s challenge to a {challengedoc['Type']} game for ∆{str(challengedoc['Bet'])}!", "Normal")
+    addnotif(challengesender, f"{username} rejected your challenged to a {challengedoc['Type']} game for ∆{str(challengedoc['Bet'])}!", "Normal")
+    notifscol.delete_one({"_id": ObjectId(theid)})
+    return True
+  if challengedoc['Type'] == "Battle":
+    challengesender = challengedoc['User']
+    addnotif(username, f"You rejected {challengesender}'s challenge to a battle for ∆{str(challengedoc['Bet'])}!", "Normal")
+    addnotif(challengesender, f"{username} rejected your challenged to a battle for ∆{str(challengedoc['Bet'])}!", "Normal")
+    notifscol.delete_one({"_id": ObjectId(theid)})
+    return True
 
 def acceptchallengefuncfunc(user2symbol, user1symbol, user2, user1, bet, theid):
   if user2symbol == 'rock':
@@ -958,3 +979,45 @@ def getbattlestats(username):
     # money won, money lost
   }
   return document
+
+def battle(username, enemy, bet):
+  try:
+    bet = int(bet)
+    if getuser(enemy) == False:
+      return f"{enemy} is not a real user!"
+    if enemy == username:
+      return "You cannot challenge yourself!"
+    if bet > getuser(enemy)['Money']:
+      return f"{enemy} does not have {str(bet)}!"
+    if bet > getuser(username)['Money']:
+      return f"You don't have {str(bet)}!"
+    if getsettings(username)['Passive'] == True:
+      return "You are in passive mode so you can't interact with any users!"
+    if getsettings(enemy)['Passive'] == True:
+      return f"{enemy} is in passive mode so they can't interact with any users!"
+    thedict = {"Type": "Battle", "Bet": bet, "User": username}
+    addnotif(enemy, None, thedict)
+    addnotif(username, f"You challenged {enemy} to a battle for ∆{str(bet)}!", "Normal")
+    return True
+  except:
+    return f"{bet} is not a number!"
+
+def acceptchallengebattle(challengeid):
+  challenge = getchallenge(challengeid)
+  bet = challenge['Bet']
+  func = battlexp(challenge['Username'], challenge['User'])
+  if challenge['Username'] in func:
+    addmoney(challenge['Username'], bet)
+    addmoney(challenge['User'], bet*-1)
+    thedictuser = {"Type": "BattleGif", "Bet": bet, "Winner": challenge['Username'], "Message": f"You won the battle between you and {challenge['User']}! You won ∆{str(bet)}!"}
+    addnotif(challenge['Username'], None, thedictuser)
+    thedictuser2 = {"Type": "BattleGif", "Bet": bet, "Winner": challenge['Username'], "Message": f"You lost the RPS game between you and {challenge['Username']}! You lost ∆{str(bet)}!"}
+    addnotif(challenge['User'], None, thedictuser2)
+  else:
+    addmoney(challenge['User'], bet)
+    addmoney(challenge['Username'], bet*-1)
+    thedictuser = {"Type": "BattleGif", "Bet": bet, "Winner": challenge['User'], "Message": f"You lost the battle between you and {challenge['User']}! You lost ∆{str(bet)}!"}
+    addnotif(challenge['Username'], None, thedictuser)
+    thedictuser2 = {"Type": "BattleGif", "Bet": bet, "Winner": challenge['User'], "Message": f"You won the RPS game between you and {challenge['Username']}! You won ∆{str(bet)}!"}
+    addnotif(challenge['User'], None, thedictuser2)
+  notifscol.delete_one({"_id": ObjectId(challengeid)})

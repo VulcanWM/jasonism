@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width">
     <title>jasonism - Notifications</title>
     <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='battle.css') }}" rel="stylesheet" type="text/css" />
     <script src="{{url_for('static', filename='sticky.js')}}"></script>
+    <script src="{{url_for('static', filename='battle.js')}}"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
   </head>
   <body>
@@ -36,6 +38,39 @@
           {% else %}
             <p style="color: #9ACD32">{{notif['User']}} challenged you to a {{notif['Type']}} game for ∆{{notif['Bet']}}! Click <a href="/denychallenge/{{notif['_id']}}">here</a> to deny the challenge and click <a href="/acceptchallenge/{{notif['_id']}}">here</a> to accept it</p>
           {% endif %}
+        {% elif notif['Type'] == 'Battle' %}
+          {% if notif['Seen'] == False %}
+            <p style="color: #FF6347">{{notif['User']}} challenged you to a battle for ∆{{notif['Bet']}}! Click <a href="/denychallenge/{{notif['_id']}}">here</a> to deny the challenge and click <a href="/acceptchallenge/{{notif['_id']}}">here</a> to accept it</p>
+          {% else %}
+            <p style="color: #9ACD32">{{notif['User']}} challenged you to a battle for ∆{{notif['Bet']}}! Click <a href="/denychallenge/{{notif['_id']}}">here</a> to deny the challenge and click <a href="/acceptchallenge/{{notif['_id']}}">here</a> to accept it</p>
+          {% endif %}
+        {% elif notif['Type'] == 'BattleGif' %}
+          {% if notif['Seen'] == False %}
+            <p style="color: #FF6347">{{notif['Message']}}</p>
+          {% else %}
+            <p style="color: #9ACD32">{{notif['Message']}}</p>
+          {% endif %}
+          <div id="myProgress">
+            <div id="person1">
+              <div id="myBar">100XP</div>
+              <p>You</p>
+            </div>
+            <br>
+            <div id="person2">
+              <div id="myBar2">100XP</div>
+              <p>Other person</p>
+            </div>
+            <div id="status"></div>
+          </div>
+          <script>
+            {% if notif['Winner'] == notif['Username'] %}
+              move(15)
+              move2(10)
+            {% else %}
+              move(10)
+              move2(15)
+            {% endif %}
+          </script>
         {% endif %}
       {% endfor %}
   </body>
