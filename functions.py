@@ -103,8 +103,6 @@ def getuser(username):
   mydoc = profilescol.find(myquery)
   for x in mydoc:
     if x.get("Deleted", None) == None:
-      if x.get("BlockName", None) == None:
-        x['BlockName'] = "your pet"
       return x
     return False
   return False
@@ -138,8 +136,15 @@ def checkgambling(username):
   }
   return document
 
+def checkgamblingadd(username):
+  myquery = { "Username": username }
+  mydoc = gamblingcol.find(myquery)
+  for x in mydoc:
+    return x
+  return False
+
 def addgambling(username, gametype, stats):
-  if checkgambling(username) == False:
+  if checkgamblingadd(username) == False:
     document = [{
       "Username": username,
       # [wontime, losttime, wonmoney-lostmoney, howmuchgamble]
@@ -153,7 +158,7 @@ def addgambling(username, gametype, stats):
       # [wontime, losttime, drawtime, wonmoney-lostmoney, howmuchgamble]
       "ChallengeRPS": [0,0,0,0,0]
     }]
-    gamblingcol.insert_many(document)
+    gamblingcol.insert_many([document])
   userstats = checkgambling(username)
   if gametype == "flipcoin":
     doc = userstats['Flipcoin']
@@ -288,34 +293,10 @@ def makeaccount(username, password, passwordagain):
     "Money": 0,
     "XP": 0,
     "Daily": [],
-    "Block": [0],
     "Description": None,
     "Verified": False
   }]
   profilescol.insert_many(document)
-  return True
-
-def makeblockbigger(username):
-  user = getuser(username)
-  usergrid = user['Block']
-  level = str(int(user['XP'])/1000 + 1).split(".")[0]
-  lengrid = len(usergrid)
-  if int(lengrid) == int(level):
-    return "You need to go to the next level to make your block bigger!"
-  if lengrid == 1000:
-    return "You can't make your block bigger as it's the maximum size that you can make it!"
-  if user['Money'] < 10000:
-    return "You need ∆10000 to make your block bigger!"
-  newmoney = user['Money'] - 10000
-  newgrid = usergrid
-  newgrid.append(0)
-  user2 = user
-  del user2['Block']
-  user2['Block'] = newgrid
-  del user2['Money']
-  user2['Money'] = newmoney
-  profilescol.delete_one({"Username": username})
-  profilescol.insert_many([user2])
   return True
 
 def addmoney(username, amount):
@@ -524,32 +505,6 @@ def mencalc():
     addcookie("User", username)
     addcookie("MathsAns", str(answer))
     return question
-
-def upgradeblock(username, index):
-  try:
-    if getuser(username)['Money'] < 5000:
-      return "You need ∆5000 to upgrade one of the blocks in your block!"
-    index = int(index)
-    user = getuser(username)
-    thetype = user['Block'][int(index)]
-    if thetype == 3:
-      return "You have upgraded that block in your block the most you can!"
-    newtype = thetype + 1
-    user2 = user
-    block = user2['Block']
-    block.pop(index)
-    block[index:index] = [newtype]
-    del user2['Block']
-    user2['Block'] = block
-    money = user2['Money']
-    newmoney = money - 5000
-    del user2['Money']
-    user2['Money'] = newmoney
-    profilescol.delete_one({"Username": username})
-    profilescol.insert_many([user2])
-    return True
-  except:
-    return "That is not real land on your grid!"
 
 def randomword():
   word = random.choice(words)
@@ -980,6 +935,13 @@ def getbattlestats(username):
   }
   return document
 
+def getbattlestatsforadd(username):
+  myquery = { "Username": username }
+  mydoc = battlecol.find(myquery)
+  for x in mydoc:
+    return x
+  return False
+
 def battle(username, enemy, bet):
   try:
     bet = int(bet)
@@ -1009,15 +971,47 @@ def acceptchallengebattle(challengeid):
   if challenge['Username'] in func:
     addmoney(challenge['Username'], bet)
     addmoney(challenge['User'], bet*-1)
-    thedictuser = {"Type": "BattleGif", "Bet": bet, "Winner": challenge['Username'], "Message": f"You won the battle between you and {challenge['User']}! You won ∆{str(bet)}!"}
+    addxp(challenge['Username'], 250)
+    changebattlestats(challenge['Username'], [1,0,bet,0])
+    changebattlestats(challenge['User'], [0,1,0,bet])
+    thedictuser = {"Type": "BattleGif", "Bet": bet, "Winner": challenge['Username'], "Message": f"You won the battle between you and {challenge['User']}! You won ∆{str(bet)} and 250 XP !"}
     addnotif(challenge['Username'], None, thedictuser)
     thedictuser2 = {"Type": "BattleGif", "Bet": bet, "Winner": challenge['Username'], "Message": f"You lost the RPS game between you and {challenge['Username']}! You lost ∆{str(bet)}!"}
     addnotif(challenge['User'], None, thedictuser2)
   else:
     addmoney(challenge['User'], bet)
     addmoney(challenge['Username'], bet*-1)
+    addxp(challenge['User'], 250)
+    changebattlestats(challenge['User'], [1,0,bet,0])
+    changebattlestats(challenge['Username'], [0,1,0,bet])
     thedictuser = {"Type": "BattleGif", "Bet": bet, "Winner": challenge['User'], "Message": f"You lost the battle between you and {challenge['User']}! You lost ∆{str(bet)}!"}
     addnotif(challenge['Username'], None, thedictuser)
-    thedictuser2 = {"Type": "BattleGif", "Bet": bet, "Winner": challenge['User'], "Message": f"You won the RPS game between you and {challenge['Username']}! You won ∆{str(bet)}!"}
+    thedictuser2 = {"Type": "BattleGif", "Bet": bet, "Winner": challenge['User'], "Message": f"You won the RPS game between you and {challenge['Username']}! You won ∆{str(bet)} and 250 XP!"}
     addnotif(challenge['User'], None, thedictuser2)
   notifscol.delete_one({"_id": ObjectId(challengeid)})
+
+def changebattlestats(username, stats):
+  if getbattlestatsforadd(username) == False:
+    document = {
+      "Username": username,
+      "Count": [0,0],
+      # won, lost
+      "Money": [0,0]
+      # money won, money lost
+    }
+    battlecol.insert_many([document])
+  userstats = getbattlestats(username)
+  countdoc = userstats['Count']
+  count0 = stats[0] + countdoc[0]
+  count1 = stats[1] + countdoc[1]
+  moneydoc = userstats['Money']
+  money0 = stats[2] + moneydoc[0]
+  money1 = stats[3] + moneydoc[1]
+  newcount = [count0, count1]
+  newmoney = [money0, money1]
+  del userstats['Count']
+  userstats['Count'] = newcount
+  del userstats['Money']
+  userstats['Money'] = newmoney
+  battlecol.delete_one({"Username": username})
+  battlecol.insert_many([userstats])

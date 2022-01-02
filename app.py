@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request
 import datetime
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, makeblockbigger, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, upgradeblock, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem, additem, addbuff, removebuff, getbattlestats, acceptchallengebattle, battle
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem, additem, addbuff, removebuff, getbattlestats, acceptchallengebattle, battle
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -83,22 +83,6 @@ def profile():
     level = str(int(user['XP'])/1000 + 1).split(".")[0]
     user['Level'] = level
     return render_template("profile.html", user=user)
-
-@app.route("/makeblockbigger")
-def makeblockbiggerpage():
-  if getcookie("User") == False:
-    return redirect("/login")
-  else:
-    if getuser(getcookie("User")).get("Verified", False) == False:
-      return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
-    func = makeblockbigger(getcookie("User"))
-    if func == True:
-      return redirect("/profile")
-    else:
-      user = getuser(getcookie("User"))
-      level = str(int(user['XP'])/1000 + 1).split(".")[0]
-      user['Level'] = level
-      return render_template("profile.html", error=func, user=user)
 
 @app.route("/trivia")
 def trivia():
@@ -295,21 +279,6 @@ def mencalcfunc():
     return redirect("/mencalc")
   else:
     return redirect("/mencalc")
-
-@app.route("/upgradeblock/<index>")
-def upgradeblockpage(index):
-  if getcookie("User") == False:
-    return redirect("/login")
-  if getuser(getcookie("User")).get("Verified", False) == False:
-    return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
-  func = upgradeblock(getcookie("User"), index)
-  if func == True:
-    return redirect("/profile")
-  else:
-    user = getuser(getcookie("User"))
-    level = str(int(user['XP'])/1000 + 1).split(".")[0]
-    user['Level'] = level
-    return render_template("profile.html", error=func, user=user)
 
 @app.route("/allgames")
 def allgames():

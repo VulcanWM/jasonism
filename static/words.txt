@@ -531,6 +531,7 @@ batting
 battle
 bauble
 bazooka
+beehive
 blabber
 bladder
 blade
@@ -2783,6 +2784,7 @@ galleria
 gallery
 galley
 gallon
+galloping
 gallows
 gallstone
 galore
@@ -3259,6 +3261,7 @@ hesitant
 hesitate
 hexagon
 hexagram
+history
 hubcap
 huddle
 huddling
@@ -5676,6 +5679,7 @@ schilling
 schnapps
 scholar
 science
+scientific
 scientist
 scion
 scoff

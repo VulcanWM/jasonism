@@ -41,15 +41,6 @@
       <a href="/items/@{{user['Username']}}">{{user['Username']}}'s Items</a>
       <br>
       <a href="/battlestats/@{{user['Username']}}">{{user['Username']}}'s Battle Stats</a>
-      <hr>
-      <div class="container">
-        <div class="grid">
-          {% for land in user['Block'] %}
-            {% set items = ['wood', 'hair', 'beard', 'face']%}
-            <a href="/@{{user['Username']}}" class="{{items[land]}}"></a>
-          {% endfor %}
-        </div>
-      </div>
     </div>
   </body>
 </html>
