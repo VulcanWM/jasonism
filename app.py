@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request
 import datetime
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem, additem, addbuff, removebuff, getbattlestats, acceptchallengebattle, battle
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem, additem, addbuff, removebuff, getbattlestats, acceptchallengebattle, battle, xpleaderboard, moneyleaderboard
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -698,3 +698,13 @@ def battlepagefunc():
       return render_template("battle.html", error=func)
   else:
     return redirect("/battle")
+
+@app.route("/lb")
+@app.route("/leaderboard")
+def leaderboardpage():
+  xplb = xpleaderboard()
+  moneylb = moneyleaderboard()
+  if getcookie("User") == False:
+    return render_template("leaderboard.html", xplb=xplb, moneylb=moneylb, logged=False)
+  else:
+    return render_template("leaderboard.html", xplb=xplb, moneylb=moneylb, logged=getcookie("User"))

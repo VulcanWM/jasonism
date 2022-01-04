@@ -20,6 +20,7 @@ function navbaredit(logged){
       <a class="nav-link nav-link-ltr" href="/notifs">Notifications</a>
       <a class="nav-link nav-link-ltr" href="/shop">Shop</a>
       <a class="nav-link nav-link-ltr" href="/allgames">All Games</a>
+      <a class="nav-link nav-link-ltr" href="/leaderboard">Leaderboard</a>
       <a class="nav-link nav-link-ltr" href="/settings">Settings</a>
       <a class="nav-link nav-link-ltr" href="/logout">Logout</a>
     `

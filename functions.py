@@ -1015,3 +1015,19 @@ def changebattlestats(username, stats):
   userstats['Money'] = newmoney
   battlecol.delete_one({"Username": username})
   battlecol.insert_many([userstats])
+
+def xpleaderboard():
+  mydoc = profilescol.find().sort("XP", -1).limit(10)
+  lb = []
+  for x in mydoc:
+    del x['Password']
+    lb.append(x)
+  return lb
+
+def moneyleaderboard():
+  mydoc = profilescol.find().sort("Money", -1).limit(10)
+  lb = []
+  for x in mydoc:
+    del x['Password']
+    lb.append(x)
+  return lb
