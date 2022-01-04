@@ -1,5 +1,4 @@
 # v1.0.5
-The user interaction update
 ## New Features
 - Added quick maths: `/quickmaths`
 - Added seeing your buffs: `/buffs`
@@ -8,6 +7,7 @@ The user interaction update
 - Added seeing your battle stats: `/battlestats`
 - Added seeing another user's battle stats: `/battlestats/@user`
 - Added battling users: `/battle`
+- Added a leaderboard: `/leaderboard`
 
 ## Fixed bugs
 - Fixed the shop bug: `/shop`
