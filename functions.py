@@ -783,8 +783,10 @@ def getitems(username):
   myquery = {"Username": username}
   mydoc = itemscol.find(myquery)
   for x in mydoc:
+    if x.get("Badges", False) == False:
+      x['Badges'] = []
     return x
-  return {"Username": username, "Items": {}, "Active": [], "Buffs": []}
+  return {"Username": username, "Items": {}, "Active": [], "Buffs": [], "Badges": []}
 
 def getsettings(username):
   myquery = {"Username": username}
@@ -870,10 +872,15 @@ def addbuff(buff, username):
   itemscol.insert_many([useritems])
   return True
 
-def additem(itemname, username):
+def additem(username, itemname):
   useritems = getitems(username)
   items = useritems['Items']
-  items[itemname] = 1
+  if items.keys().get(itemname, False) != False:
+    number = items[itemname]
+    del items[itemname]
+    items[itemname] = number + 1
+  else:
+    items[itemname] = 1
   del useritems['Items']
   useritems['Items'] = items
   itemscol.delete_one({"Username": username})
@@ -1031,3 +1038,12 @@ def moneyleaderboard():
     del x['Password']
     lb.append(x)
   return lb
+
+def addbadge(username, badgename):
+  useritems = getitems(username)
+  badges = useritems['Badges']
+  badges.append(badgename)
+  del useritems['Badges']
+  useritems['Badges'] = badges
+  itemscol.delete_one({"Username": username})
+  itemscol.insert_many([useritems])

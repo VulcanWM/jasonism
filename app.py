@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request
 import datetime
-from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem, additem, addbuff, removebuff, getbattlestats, acceptchallengebattle, battle, xpleaderboard, moneyleaderboard
+from functions import getcookie, makeaccount, addcookie, getuser, gethashpass, delcookies, getquestion, addxpmoney, cupgame, flipcoin, rps, rolldice, mencalc, randomword, shuffleword, words, getnotifs, clearnotifs, allseen, challengerps, denychallenge, getchallenge, acceptchallengefuncfunc, checkgambling, changeblockname, changedesc, addxpstats, checkxpstats, addlog, changeemail, verify, getitems, getsettings, changesettings, buyitem, addbuff, removebuff, getbattlestats, acceptchallengebattle, battle, xpleaderboard, moneyleaderboard, addbadge
 import os
 import random
 from werkzeug.security import check_password_hash
@@ -82,7 +82,8 @@ def profile():
     user = getuser(getcookie("User"))
     level = str(int(user['XP'])/1000 + 1).split(".")[0]
     user['Level'] = level
-    return render_template("profile.html", user=user)
+    items = getitems(getcookie("User"))
+    return render_template("profile.html", user=user, items=items)
 
 @app.route("/trivia")
 def trivia():
@@ -437,7 +438,8 @@ def user(username):
   else:
     level = str(int(user['XP'])/1000 + 1).split(".")[0]
     user['Level'] = level
-    return render_template("userprofile.html", user=user, logged=getcookie("User"))
+    items = getitems(username)
+    return render_template("userprofile.html", user=user, logged=getcookie("User"), items=items)
 
 @app.route("/gamblingstats")
 def gamblingstats():
@@ -602,10 +604,10 @@ def quickmaths():
       return render_template("index.html", text="You have to verify your email (or set your email first)", user=getuser(getcookie("User")))
     if request.form['mathsanswer'] == os.getenv("FLAG1py"):
       items = getitems(getcookie("User"))
-      if "mathstrophy" in items['Items'].keys():
+      if "quickmaths" in items['Badges']:
         return render_template("quickmaths.html", flag=str(os.getenv("FLAG1js")), error="You have already done this! You can only do it once!")
-      additem("mathstrophy", getcookie("User"))
       addxpmoney(getcookie("User"), 5000, 100000)
+      addbadge(getcookie("User"), "quickmaths")
       return render_template("quickmaths.html", flag=str(os.getenv("FLAG1js")), error="You did it! You got 5000XP and ∆100000!")
     else:
       return redirect("/quickmaths")
@@ -708,3 +710,4 @@ def leaderboardpage():
     return render_template("leaderboard.html", xplb=xplb, moneylb=moneylb, logged=False)
   else:
     return render_template("leaderboard.html", xplb=xplb, moneylb=moneylb, logged=getcookie("User"))
+

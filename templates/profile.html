@@ -33,6 +33,17 @@
       <p>XP: {{user['XP']}}</p>
       <p>Money: {{user['Money']}}</p>
       <p>Level: {{user['Level']}}</p>
+      <hr>
+      <h3>Your Badges</h3>
+      {% if items['Badges'] == [] %}
+        <p>You don't have any badges!</p>
+      {% endif %}
+      {% for badge in items['Badges'] %}
+        {% if badge == "quickmaths" %}
+          <img alt="quickmathsbadge" src="{{url_for('static', filename='quickmathsbadge.png')}}">
+        {% endif %}
+      {% endfor %}
+      <hr>
       <a href="/gamblingstats">Your Gambling Stats</a>
       <br>
       <a href="/xpstats">Your XP Stats</a>
