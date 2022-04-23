@@ -13,7 +13,7 @@
     <div class="header">
       <h1>The Leaderboard</h1>
     </div>
-    <div class="navbar">
+   <div class="navbar" id="navbar">
     </div>
     <div class="content">
       <script>
@@ -25,12 +25,16 @@
       </script>
       <h2>Top 10 XP Players</h2>
       {% for user in xplb %}
-        <p><a href="/@{{user['Username']}}">{{user['Username']}}</a>: {{user['XP']}}</p>
+        <ol>
+          <li><p><a href="/@{{user['Username']}}">{{user['Username']}}</a>: {{user['XP']}}</p></li>
+        </ol>
       {% endfor %}
       <hr>
       <h2>Top 10 Money Players</h2>
       {% for user in moneylb %}
-        <p><a href="/@{{user['Username']}}">{{user['Username']}}</a>: {{user['Money']}}</p>
+        <ol>
+          <li><p><a href="/@{{user['Username']}}">{{user['Username']}}</a>: {{user['Money']}}</p></li>
+        </ol>
       {% endfor %}
     </div>
   </body>

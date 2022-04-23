@@ -1,9 +1,9 @@
 window.onscroll = function() {myFunction()};
 var smthcool = "omgfunkey";
-var navbar = document.getElementsByClassName("navbar")[0];
 var sticky = navbar.offsetTop;
 
 function myFunction() {
+  var navbar = document.getElementById('navabar');
   if (window.pageYOffset >= sticky) {
     navbar.classList.add("sticky")
   } else {
@@ -12,7 +12,7 @@ function myFunction() {
 }
 
 function navbaredit(logged){
-  navbar = document.getElementsByClassName("navbar")[0]
+  var navbar = document.getElementById('navbar');
   if (logged == "yes"){
     navbar.innerHTML = navbar.innerHTML + `
       <a class="nav-link nav-link-ltr" href="/">Home</a>

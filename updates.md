@@ -1,16 +1,10 @@
-# v1.0.5
+# v1.0.6
 ## New Features
-- Added quick maths: `/quickmaths`
-- Added seeing your buffs: `/buffs`
-- Added adding buffs: `/addbuff`
-- Added removing buffs: `/removebuff`
-- Added seeing your battle stats: `/battlestats`
-- Added seeing another user's battle stats: `/battlestats/@user`
-- Added battling users: `/battle`
-- Added a leaderboard: `/leaderboard`
+- Added badges: `/profile` and `@<username>`
+- Instead of a quick maths item, added a quick maths badge instead: `/quickmaths`
 
 ## Fixed bugs
-- Fixed the shop bug: `/shop`
+**Nothing this version!**
 
 ## Removal of features
-- Removed making block bigger
+**Nothing this version!**
