@@ -20,3 +20,7 @@ and more...
 You also have levels. The level you are in is the number of XP you have, divided by 1000, rounded to the closest whole number below, plus 1 (or you can just check your profile).
 
 ## [CLICK HERE TO PLAY](https://jasonism.vulcanwm.repl.co)
+
+---
+
+Made by [VulcanWM](https://vulcanwm.is-a.dev)
